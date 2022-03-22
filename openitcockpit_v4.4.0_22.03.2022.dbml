@@ -1,0 +1,3546 @@
+Project openITCOCKPIT {
+  database_type: 'MySQL'
+  Note: 'Database documentaion of the openITCOCKPIT Project https://openitcockpit.io'
+}
+Table "usercontainerroles" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(100) [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Usercontainerroles'''
+}
+Table "usercontainerroles_to_containers" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "usercontainerrole_id" INTEGER [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "permission_level" INTEGER [not null, default: "1"]
+
+  Indexes {
+    usercontainerrole_id [name: "usercontainerrole_id"]
+    container_id [name: "container_id"]
+  }
+}
+
+Ref: usercontainerroles_to_containers.usercontainerrole_id > usercontainerroles.id
+Ref: usercontainerroles_to_containers.container_id > containers.id
+
+Table "ldapgroups_to_usercontainerroles" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "ldapgroup_id" INTEGER [not null, default: NULL]
+  "usercontainerrole_id" INTEGER [not null, default: NULL]
+}
+
+Ref: ldapgroups_to_usercontainerroles.ldapgroup_id > ldapgroups.id
+Ref: ldapgroups_to_usercontainerroles.usercontainerrole_id > usercontainerroles.id
+
+
+Table "ldapgroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "cn" VARCHAR(255) [not null, default: NULL]
+  "dn" VARCHAR(512) [not null, default: NULL]
+  "description" VARCHAR(512) [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Ldapgroups'''
+
+  Indexes {
+    (dn, cn) [name: "dn"]
+  }
+}
+
+Table "ldapgroups_to_usergroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "ldapgroup_id" INTEGER [not null, default: NULL]
+  "usergroup_id" INTEGER [not null, default: NULL]
+}
+
+Ref: ldapgroups_to_usergroups.usergroup_id > usergroups.id
+Ref: ldapgroups_to_usergroups.ldapgroup_id > ldapgroups.id
+
+
+Table "changelogs" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "model" VARCHAR(255) [not null, default: NULL]
+  "action" VARCHAR(255) [not null, default: NULL]
+  "object_id" INTEGER [not null, default: NULL]
+  "objecttype_id" INTEGER [default: NULL]
+  "user_id" INTEGER [default: NULL]
+  "data" TEXT [not null, default: NULL]
+  "name" TEXT [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Changelogs'''
+
+  Indexes {
+    created [name: "created"]
+  }
+}
+
+Ref: changelogs.user_id > users.id
+Table "changelogs_to_containers" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "changelog_id" INTEGER [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    changelog_id [name: "changelog_id"]
+    container_id [name: "container_id"]
+  }
+}
+
+Ref: changelogs_to_containers.container_id > containers.id
+Ref: changelogs_to_containers.changelog_id > changelogs.id
+
+
+Table "calendar_holidays" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "calendar_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "default_holiday" INTEGER [not null]
+  "date" VARCHAR [default: NULL]
+
+  Note: '''CakePHP table Object: CalendarHolidays'''
+}
+
+Ref: calendar_holidays.calendar_id > calendars.id
+
+Table "hosttemplatecommandargumentvalues" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "commandargument_id" INTEGER [not null, default: NULL]
+  "hosttemplate_id" INTEGER [not null, default: NULL]
+  "value" VARCHAR(1000) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Hosttemplatecommandargumentvalues'''
+}
+
+Ref: hosttemplatecommandargumentvalues.commandargument_id > commandarguments.id
+Ref: hosttemplatecommandargumentvalues.hosttemplate_id > hosttemplates.id
+
+Table "wizard_assignments" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "type_id" VARCHAR(37) [not null, default: NULL]
+
+  Note: '''CakePHP table Object: WizardAssignments'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+Table "servicetemplates_to_wizard_assignments" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "servicetemplate_id" INTEGER [not null, default: NULL]
+  "wizard_assignment_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    wizard_assignment_id [name: "wizard_assignment_id"]
+    servicetemplate_id [name: "servicetemplate_id"]
+  }
+}
+
+Ref: servicetemplates_to_wizard_assignments.servicetemplate_id > servicetemplates.id
+Ref: servicetemplates_to_wizard_assignments.wizard_assignment_id > wizard_assignments.id
+
+
+Table "services_to_servicedependencies" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "service_id" INTEGER [not null, default: NULL]
+  "servicedependency_id" INTEGER [not null, default: NULL]
+  "dependent" INTEGER [not null]
+
+  Note: '''CakePHP table Object: ServicedependenciesServiceMemberships'''
+
+  Indexes {
+    (service_id, dependent) [name: "service_id"]
+    (servicedependency_id, dependent) [name: "servicedependency_id"]
+  }
+}
+
+Ref: services_to_servicedependencies.service_id > services.id
+
+Table "contacts_to_services" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contact_id" INTEGER [not null, default: NULL]
+  "service_id" INTEGER [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ContactsToServices'''
+
+  Indexes {
+    contact_id [name: "contact_id"]
+    service_id [name: "service_id"]
+  }
+}
+
+Table "apikeys" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "user_id" INTEGER [not null, default: NULL]
+  "apikey" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [default: NULL]
+
+  Note: '''CakePHP table Object: Apikeys'''
+
+  Indexes {
+    (apikey, user_id) [name: "apikey"]
+  }
+}
+
+Ref: apikeys.user_id > users.id
+
+Table "hosts_to_hostescalations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "hostescalation_id" INTEGER [not null, default: NULL]
+  "excluded" INTEGER [not null]
+
+  Note: '''CakePHP table Object: HostescalationsHostMemberships'''
+
+  Indexes {
+    (host_id, excluded) [name: "host_id"]
+    (hostescalation_id, excluded) [name: "hostescalation_id"]
+  }
+}
+
+Ref: hosts_to_hostescalations.host_id > hosts.id
+
+Table "timeperiod_timeranges" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "timeperiod_id" INTEGER [not null]
+  "day" INTEGER [not null]
+  "start" VARCHAR(5) [not null, default: NULL]
+  "end" VARCHAR(5) [not null, default: NULL]
+
+  Note: '''CakePHP table Object: TimeperiodTimeranges'''
+}
+
+Ref: timeperiod_timeranges.timeperiod_id > timeperiods.id
+
+Table "widgets" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "dashboard_tab_id" INTEGER [not null, default: NULL]
+  "type_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [default: NULL]
+  "service_id" INTEGER [default: NULL]
+  "row" INTEGER [not null, default: NULL]
+  "col" INTEGER [not null, default: NULL]
+  "width" INTEGER [not null, default: NULL]
+  "height" INTEGER [not null, default: NULL]
+  "title" VARCHAR(255) [not null, default: NULL]
+  "color" VARCHAR(255) [not null, default: NULL]
+  "directive" VARCHAR(255) [not null, default: NULL]
+  "icon" VARCHAR(255) [not null, default: NULL]
+  "json_data" TEXT [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Widgets'''
+}
+
+Ref: widgets.dashboard_tab_id > dashboard_tabs.id
+Ref: widgets.host_id > hosts.id
+Ref: widgets.service_id > services.id
+
+
+Table "contactgroups_to_services" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contactgroup_id" INTEGER [not null, default: NULL]
+  "service_id" INTEGER [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ContactgroupsToServices'''
+
+  Indexes {
+    contactgroup_id [name: "contactgroup_id"]
+    service_id [name: "service_id"]
+  }
+}
+
+Table "servicecommandargumentvalues" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "commandargument_id" INTEGER [not null, default: NULL]
+  "service_id" INTEGER [not null, default: NULL]
+  "value" VARCHAR(1000) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Servicecommandargumentvalues'''
+}
+
+Ref: servicecommandargumentvalues.commandargument_id > commandarguments.id
+Ref: servicecommandargumentvalues.service_id > services.id
+
+Table "services_to_serviceescalations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "service_id" INTEGER [not null, default: NULL]
+  "serviceescalation_id" INTEGER [not null, default: NULL]
+  "excluded" INTEGER [not null]
+
+  Note: '''CakePHP table Object: ServiceescalationsServiceMemberships'''
+
+  Indexes {
+    (service_id, excluded) [name: "service_id"]
+    (serviceescalation_id, excluded) [name: "serviceescalation_id"]
+  }
+}
+
+Ref: services_to_serviceescalations.service_id > services.id
+
+Table "push_agents" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "agentconfig_id" VARCHAR(255) [default: NULL]
+  "password" VARCHAR(255) [not null, default: NULL]
+  "hostname" VARCHAR(255) [default: NULL]
+  "ipaddress" VARCHAR(255) [default: NULL]
+  "remote_address" VARCHAR(255) [default: NULL]
+  "http_x_forwarded_for" VARCHAR(255) [default: NULL]
+  "checkresults" TEXT(16777215) [default: NULL]
+  "last_update" DATETIME [not null, default: "CURRENT_TIMESTAMP"]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: PushAgents'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+    (uuid, agentconfig_id) [name: "uuid_2"]
+    (agentconfig_id, uuid) [name: "agentconfig_id"]
+  }
+}
+
+Ref: push_agents.agentconfig_id > agentconfigs.id
+
+Table "macros" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(10) [not null, default: NULL]
+  "value" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [not null, default: NULL]
+  "password" INTEGER [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Macros'''
+}
+
+Table "exports" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "task" VARCHAR(255) [not null, default: NULL]
+  "text" VARCHAR(255) [not null, default: NULL]
+  "finished" INTEGER [not null]
+  "successfully" INTEGER [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Exports'''
+
+  Indexes {
+    (task, text, finished, successfully) [name: "task"]
+  }
+}
+
+Table "usergroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Usergroups'''
+}
+
+Ref: usergroups.id - aros.foreign_key
+Ref: usergroups.id < users.usergroup_id
+
+
+Table "systemsettings" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "key" VARCHAR(255) [not null, default: NULL]
+  "value" VARCHAR(255) [not null, default: NULL]
+  "info" VARCHAR(1500) [not null, default: NULL]
+  "section" VARCHAR(255) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Systemsettings'''
+}
+
+Table "commandarguments" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "command_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(10) [not null, default: NULL]
+  "human_name" VARCHAR(255) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Commandarguments'''
+
+  Indexes {
+    (command_id, name, human_name) [name: "command_id"]
+  }
+}
+
+Ref: commandarguments.command_id > commands.id
+
+Table "configuration_files" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "config_file" VARCHAR(255) [not null, default: NULL]
+  "key" VARCHAR(2000) [not null, default: NULL]
+  "value" VARCHAR(2000) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ConfigurationFiles'''
+}
+
+Table "servicegroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "container_id" INTEGER [not null]
+  "description" VARCHAR(255) [not null, default: NULL]
+  "servicegroup_url" VARCHAR(255) [default: NULL]
+
+  Note: '''CakePHP table Object: Servicegroups'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Ref: servicegroups.container_id > containers.id
+Ref: servicegroups.id < mapitems.object_id
+Ref: servicegroups.id < maplines.object_id
+Ref: servicegroups.id < mapsummaryitems.object_id
+Table "services_to_servicegroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "service_id" INTEGER [not null, default: NULL]
+  "servicegroup_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    service_id [name: "service_id"]
+    servicegroup_id [name: "servicegroup_id"]
+  }
+}
+
+Ref: services_to_servicegroups.service_id > services.id
+Ref: services_to_servicegroups.servicegroup_id > servicegroups.id
+
+Table "servicetemplates_to_servicegroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "servicetemplate_id" INTEGER [not null, default: NULL]
+  "servicegroup_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    servicetemplate_id [name: "servicetemplate_id"]
+    servicegroup_id [name: "servicegroup_id"]
+  }
+}
+
+Ref: servicetemplates_to_servicegroups.servicetemplate_id > servicetemplates.id
+Ref: servicetemplates_to_servicegroups.servicegroup_id > servicegroups.id
+
+
+Table "registers" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "license" VARCHAR(37) [not null, default: NULL]
+  "accepted" BOOLEAN [not null]
+  "apt" BOOLEAN [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Registers'''
+}
+
+Table "deleted_services" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "host_uuid" VARCHAR(37) [not null, default: NULL]
+  "servicetemplate_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [default: NULL]
+  "deleted_perfdata" INTEGER
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: DeletedServices'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Table "servicetemplateeventcommandargumentvalues" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "commandargument_id" INTEGER [not null, default: NULL]
+  "servicetemplate_id" INTEGER [not null, default: NULL]
+  "value" VARCHAR(1000) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Servicetemplateeventcommandargumentvalues'''
+}
+
+Ref: servicetemplateeventcommandargumentvalues.commandargument_id > commandarguments.id
+Ref: servicetemplateeventcommandargumentvalues.servicetemplate_id > servicetemplates.id
+
+Table "contacts_to_hostcommands" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contact_id" INTEGER [not null, default: NULL]
+  "command_id" INTEGER [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ContactsToHostcommands'''
+
+  Indexes {
+    contact_id [name: "contact_id"]
+    command_id [name: "command_id"]
+  }
+}
+
+Table "hostdependencies" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "container_id" INTEGER [default: NULL]
+  "inherits_parent" INTEGER [not null]
+  "timeperiod_id" INTEGER [default: NULL]
+  "execution_fail_on_up" INTEGER [not null, default: NULL]
+  "execution_fail_on_down" INTEGER [not null, default: NULL]
+  "execution_fail_on_unreachable" INTEGER [not null, default: NULL]
+  "execution_fail_on_pending" INTEGER [not null, default: NULL]
+  "execution_none" INTEGER [not null, default: NULL]
+  "notification_fail_on_up" INTEGER [not null, default: NULL]
+  "notification_fail_on_down" INTEGER [not null, default: NULL]
+  "notification_fail_on_unreachable" INTEGER [not null, default: NULL]
+  "notification_fail_on_pending" INTEGER [not null, default: NULL]
+  "notification_none" INTEGER [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Hostdependencies'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Ref: hostdependencies.container_id > containers.id
+Ref: hostdependencies.timeperiod_id > timeperiods.id
+Table "hosts_to_hostdependencies" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "hostdependency_id" INTEGER [not null, default: NULL]
+  "dependent" INTEGER [not null]
+
+  Indexes {
+    (host_id, dependent) [name: "host_id"]
+    (hostdependency_id, dependent) [name: "hostdependency_id"]
+  }
+}
+
+Ref: hosts_to_hostdependencies.host_id > hosts.id
+Ref: hosts_to_hostdependencies.hostdependency_id > hostdependencies.id
+
+
+Table "hostgroups_to_hostdependencies" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "hostgroup_id" INTEGER [not null, default: NULL]
+  "hostdependency_id" INTEGER [not null, default: NULL]
+  "dependent" INTEGER [not null]
+
+  Indexes {
+    (hostgroup_id, dependent) [name: "hostgroup_id"]
+    (hostdependency_id, dependent) [name: "hostdependency_id"]
+  }
+}
+
+Ref: hostgroups_to_hostdependencies.hostgroup_id > hostgroups.id
+Ref: hostgroups_to_hostdependencies.hostdependency_id > hostdependencies.id
+
+
+
+Table "contactgroups_to_hosttemplates" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contactgroup_id" INTEGER [not null, default: NULL]
+  "hosttemplate_id" INTEGER [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ContactgroupsToHosttemplates'''
+
+  Indexes {
+    contactgroup_id [name: "contactgroup_id"]
+    hosttemplate_id [name: "hosttemplate_id"]
+  }
+}
+
+Table "services" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "servicetemplate_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(1500) [default: NULL]
+  "description" VARCHAR(255) [default: NULL]
+  "command_id" INTEGER [default: NULL]
+  "check_command_args" VARCHAR(1000) [not null, default: NULL]
+  "eventhandler_command_id" INTEGER [default: NULL]
+  "notify_period_id" INTEGER [default: NULL]
+  "check_period_id" INTEGER [default: NULL]
+  "check_interval" FLOAT [default: NULL]
+  "retry_interval" FLOAT [default: NULL]
+  "max_check_attempts" INTEGER [default: NULL]
+  "first_notification_delay" FLOAT [default: NULL]
+  "notification_interval" FLOAT [default: NULL]
+  "notify_on_warning" INTEGER [default: NULL]
+  "notify_on_unknown" INTEGER [default: NULL]
+  "notify_on_critical" INTEGER [default: NULL]
+  "notify_on_recovery" INTEGER [default: NULL]
+  "notify_on_flapping" INTEGER [default: NULL]
+  "notify_on_downtime" INTEGER [default: NULL]
+  "is_volatile" INTEGER [default: NULL]
+  "flap_detection_enabled" INTEGER [default: NULL]
+  "flap_detection_on_ok" INTEGER [default: NULL]
+  "flap_detection_on_warning" INTEGER [default: NULL]
+  "flap_detection_on_unknown" INTEGER [default: NULL]
+  "flap_detection_on_critical" INTEGER [default: NULL]
+  "low_flap_threshold" FLOAT [default: NULL]
+  "high_flap_threshold" FLOAT [default: NULL]
+  "process_performance_data" INTEGER [default: NULL]
+  "freshness_checks_enabled" INTEGER [default: NULL]
+  "freshness_threshold" INTEGER [default: NULL]
+  "passive_checks_enabled" INTEGER [default: NULL]
+  "event_handler_enabled" INTEGER [default: NULL]
+  "active_checks_enabled" INTEGER [default: NULL]
+  "notifications_enabled" INTEGER [default: NULL]
+  "notes" VARCHAR(255) [default: NULL]
+  "priority" INTEGER [default: NULL]
+  "tags" VARCHAR(255) [default: NULL]
+  "own_contacts" INTEGER [default: NULL]
+  "own_contactgroups" INTEGER [default: NULL]
+  "own_customvariables" INTEGER [default: NULL]
+  "service_url" VARCHAR(255) [default: NULL]
+  "service_type" INTEGER [not null, default: "1"]
+  "disabled" INTEGER
+  "usage_flag" INTEGER [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Services'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+    (uuid, host_id, disabled) [name: "uuid_2"]
+    (host_id, disabled) [name: "host_id"]
+  }
+}
+
+Ref: services.servicetemplate_id > servicetemplates.id
+Ref: services.host_id > hosts.id
+Ref: services.check_period_id > timeperiods.id
+Ref: services.notify_period_id > timeperiods.id
+Ref: services.command_id > commands.id
+Ref: services.id < customvariables.object_id
+Ref: services.id < serviceeventcommandargumentvalues.service_id
+Ref: services.id - grafana_userdashboard_metrics.service_id
+Ref: services.id < mkservicedata.service_id
+Ref: services.id < services_to_autoreports.service_id
+Ref: services.id - prometheus_alert_rules.service_id
+Ref: services.id < mapitems.object_id
+Ref: services.id < maplines.object_id
+Ref: services.id < mapsummaryitems.object_id
+Ref: services.id < mapgadgets.object_id
+
+Ref: contactgroups_to_services.contactgroup_id > contactgroups.id
+Ref: contactgroups_to_services.service_id > services.id
+
+
+Ref: contacts_to_services.contact_id > contacts.id
+Ref: contacts_to_services.service_id > services.id
+
+
+
+Table "users_to_usercontainerroles" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "user_id" INTEGER [not null, default: NULL]
+  "usercontainerrole_id" INTEGER [not null, default: NULL]
+  "through_ldap" BOOLEAN [not null]
+
+  Note: '''CakePHP table Object: UsercontainerrolesMemberships'''
+
+  Indexes {
+    user_id [name: "user_id"]
+    usercontainerrole_id [name: "usercontainerrole_id"]
+  }
+}
+
+Ref: users_to_usercontainerroles.user_id > users.id
+Ref: users_to_usercontainerroles.usercontainerrole_id > usercontainerroles.id
+
+Table "tenants" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "description" VARCHAR(255) [default: NULL]
+  "is_active" INTEGER [not null, default: NULL]
+  "number_users" INTEGER [not null, default: NULL]
+  "max_users" INTEGER [not null, default: NULL]
+  "number_hosts" INTEGER [not null, default: NULL]
+  "number_services" INTEGER [not null, default: NULL]
+  "firstname" VARCHAR(255) [default: NULL]
+  "lastname" VARCHAR(255) [default: NULL]
+  "street" VARCHAR(255) [default: NULL]
+  "zipcode" INTEGER [default: NULL]
+  "city" VARCHAR(255) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Tenants'''
+}
+
+Ref: tenants.container_id > containers.id
+
+
+Table "users" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "usergroup_id" INTEGER [not null, default: NULL]
+  "email" VARCHAR(100) [not null, default: NULL]
+  "password" VARCHAR(255) [not null]
+  "firstname" VARCHAR(100) [not null, default: NULL]
+  "lastname" VARCHAR(100) [not null, default: NULL]
+  "position" VARCHAR(100) [default: NULL]
+  "company" VARCHAR(100) [default: NULL]
+  "phone" VARCHAR(100) [default: NULL]
+  "timezone" VARCHAR(100) [default: "Europe/Berlin"]
+  "i18n" VARCHAR(100) [not null, default: "en_US"]
+  "dateformat" VARCHAR(100) [default: "H:i:s - d.m.Y"]
+  "image" VARCHAR(100) [default: NULL]
+  "onetimetoken" VARCHAR(100) [default: NULL]
+  "samaccountname" VARCHAR(128) [default: NULL]
+  "ldap_dn" VARCHAR(512) [default: NULL]
+  "showstatsinmenu" BOOLEAN [not null]
+  "is_active" BOOLEAN [not null]
+  "dashboard_tab_rotation" INTEGER [not null]
+  "paginatorlength" INTEGER [not null, default: "25"]
+  "recursive_browser" BOOLEAN [not null]
+  "is_oauth" BOOLEAN [not null]
+  "created" DATETIME [default: NULL]
+  "modified" DATETIME [default: NULL]
+
+  Note: '''CakePHP table Object: Users'''
+}
+
+Ref: users.id < contacts.user_id
+Table "users_to_containers" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "user_id" INTEGER [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "permission_level" INTEGER [not null, default: "1"]
+
+  Indexes {
+    user_id [name: "user_id"]
+    container_id [name: "container_id"]
+  }
+}
+
+Ref: users_to_containers.user_id > users.id
+Ref: users_to_containers.container_id > containers.id
+
+
+
+Table "contacts_to_serviceescalations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contact_id" INTEGER [not null, default: NULL]
+  "serviceescalation_id" INTEGER [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ContactsToServiceescalations'''
+
+  Indexes {
+    contact_id [name: "contact_id"]
+    serviceescalation_id [name: "serviceescalation_id"]
+  }
+}
+
+Table "contactgroups_to_servicetemplates" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contactgroup_id" INTEGER [not null, default: NULL]
+  "servicetemplate_id" INTEGER [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ContactgroupsToServicetemplates'''
+
+  Indexes {
+    contactgroup_id [name: "contactgroup_id"]
+    servicetemplate_id [name: "servicetemplate_id"]
+  }
+}
+
+Table "serviceescalations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "container_id" INTEGER [default: NULL]
+  "timeperiod_id" INTEGER [default: NULL]
+  "first_notification" INTEGER [not null, default: NULL]
+  "last_notification" INTEGER [not null, default: NULL]
+  "notification_interval" INTEGER [not null, default: NULL]
+  "escalate_on_recovery" INTEGER [not null, default: NULL]
+  "escalate_on_warning" INTEGER [not null, default: NULL]
+  "escalate_on_unknown" INTEGER [not null, default: NULL]
+  "escalate_on_critical" INTEGER [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Serviceescalations'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Ref: serviceescalations.container_id > containers.id
+Ref: serviceescalations.timeperiod_id > timeperiods.id
+
+Ref: contacts_to_serviceescalations.contact_id > contacts.id
+Ref: contacts_to_serviceescalations.serviceescalation_id > serviceescalations.id
+
+Table "contactgroups_to_serviceescalations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contactgroup_id" INTEGER [not null, default: NULL]
+  "serviceescalation_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    contactgroup_id [name: "contactgroup_id"]
+    serviceescalation_id [name: "serviceescalation_id"]
+  }
+}
+
+Ref: contactgroups_to_serviceescalations.contactgroup_id > contactgroups.id
+Ref: contactgroups_to_serviceescalations.serviceescalation_id > serviceescalations.id
+
+
+Ref: services_to_serviceescalations.serviceescalation_id > serviceescalations.id
+
+
+Table "servicegroups_to_serviceescalations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "servicegroup_id" INTEGER [not null, default: NULL]
+  "serviceescalation_id" INTEGER [not null, default: NULL]
+  "excluded" INTEGER [not null]
+
+  Indexes {
+    (servicegroup_id, excluded) [name: "servicegroup_id"]
+    (serviceescalation_id, excluded) [name: "serviceescalation_id"]
+  }
+}
+
+Ref: servicegroups_to_serviceescalations.servicegroup_id > servicegroups.id
+Ref: servicegroups_to_serviceescalations.serviceescalation_id > serviceescalations.id
+
+
+
+Table "automaps" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "description" VARCHAR(255) [default: NULL]
+  "host_regex" VARCHAR(255) [default: NULL]
+  "service_regex" VARCHAR(255) [default: NULL]
+  "show_ok" BOOLEAN [not null, default: "1"]
+  "show_warning" BOOLEAN [not null, default: "1"]
+  "show_critical" BOOLEAN [not null, default: "1"]
+  "show_unknown" BOOLEAN [not null, default: "1"]
+  "show_acknowledged" BOOLEAN [not null, default: "1"]
+  "show_downtime" BOOLEAN [not null, default: "1"]
+  "show_label" BOOLEAN [not null]
+  "group_by_host" BOOLEAN [not null]
+  "use_paginator" BOOLEAN [not null, default: "1"]
+  "font_size" VARCHAR(255) [default: NULL]
+  "recursive" BOOLEAN [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Automaps'''
+}
+
+Ref: automaps.container_id > containers.id
+
+Table "hostescalations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "timeperiod_id" INTEGER [default: NULL]
+  "first_notification" INTEGER [not null, default: NULL]
+  "last_notification" INTEGER [not null, default: NULL]
+  "notification_interval" INTEGER [not null, default: NULL]
+  "escalate_on_recovery" INTEGER [not null, default: NULL]
+  "escalate_on_down" INTEGER [not null, default: NULL]
+  "escalate_on_unreachable" INTEGER [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Hostescalations'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Ref: hostescalations.container_id > containers.id
+Ref: hostescalations.timeperiod_id > timeperiods.id
+Table "contacts_to_hostescalations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contact_id" INTEGER [not null, default: NULL]
+  "hostescalation_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    contact_id [name: "contact_id"]
+    hostescalation_id [name: "hostescalation_id"]
+  }
+}
+
+Ref: contacts_to_hostescalations.contact_id > contacts.id
+Ref: contacts_to_hostescalations.hostescalation_id > hostescalations.id
+
+Table "contactgroups_to_hostescalations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contactgroup_id" INTEGER [not null, default: NULL]
+  "hostescalation_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    contactgroup_id [name: "contactgroup_id"]
+    hostescalation_id [name: "hostescalation_id"]
+  }
+}
+
+Ref: contactgroups_to_hostescalations.contactgroup_id > contactgroups.id
+Ref: contactgroups_to_hostescalations.hostescalation_id > hostescalations.id
+
+
+Ref: hosts_to_hostescalations.hostescalation_id > hostescalations.id
+
+
+Table "hostgroups_to_hostescalations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "hostgroup_id" INTEGER [not null, default: NULL]
+  "hostescalation_id" INTEGER [not null, default: NULL]
+  "excluded" INTEGER [not null]
+
+  Indexes {
+    (hostgroup_id, excluded) [name: "hostgroup_id"]
+    (hostescalation_id, excluded) [name: "hostescalation_id"]
+  }
+}
+
+Ref: hostgroups_to_hostescalations.hostgroup_id > hostgroups.id
+Ref: hostgroups_to_hostescalations.hostescalation_id > hostescalations.id
+
+
+
+Table "customvariables" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "object_id" INTEGER [not null, default: NULL]
+  "objecttype_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "value" VARCHAR(255) [not null, default: NULL]
+  "password" INTEGER [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Customvariables'''
+}
+
+Table "hosts" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [default: NULL]
+  "hosttemplate_id" INTEGER [not null, default: NULL]
+  "address" VARCHAR(128) [not null, default: NULL]
+  "command_id" INTEGER [default: NULL]
+  "eventhandler_command_id" INTEGER [default: NULL]
+  "timeperiod_id" INTEGER [default: NULL]
+  "check_interval" INTEGER [default: NULL]
+  "retry_interval" INTEGER [default: NULL]
+  "max_check_attempts" INTEGER [default: NULL]
+  "first_notification_delay" FLOAT [default: NULL]
+  "notification_interval" FLOAT [default: NULL]
+  "notify_on_down" INTEGER [default: NULL]
+  "notify_on_unreachable" INTEGER [default: NULL]
+  "notify_on_recovery" INTEGER [default: NULL]
+  "notify_on_flapping" INTEGER [default: NULL]
+  "notify_on_downtime" INTEGER [default: NULL]
+  "flap_detection_enabled" INTEGER [default: NULL]
+  "flap_detection_on_up" INTEGER [default: NULL]
+  "flap_detection_on_down" INTEGER [default: NULL]
+  "flap_detection_on_unreachable" INTEGER [default: NULL]
+  "low_flap_threshold" FLOAT [default: NULL]
+  "high_flap_threshold" FLOAT [default: NULL]
+  "process_performance_data" INTEGER [default: NULL]
+  "freshness_checks_enabled" INTEGER [default: NULL]
+  "freshness_threshold" INTEGER [default: NULL]
+  "passive_checks_enabled" INTEGER [default: NULL]
+  "event_handler_enabled" INTEGER [default: NULL]
+  "active_checks_enabled" INTEGER [default: NULL]
+  "retain_status_information" INTEGER [default: NULL]
+  "retain_nonstatus_information" INTEGER [default: NULL]
+  "notifications_enabled" INTEGER [default: NULL]
+  "notes" VARCHAR(255) [default: NULL]
+  "priority" INTEGER [default: NULL]
+  "check_period_id" INTEGER [default: NULL]
+  "notify_period_id" INTEGER [default: NULL]
+  "tags" VARCHAR(255) [default: NULL]
+  "own_contacts" INTEGER [not null]
+  "own_contactgroups" INTEGER [not null]
+  "own_customvariables" INTEGER [not null]
+  "host_url" VARCHAR(255) [default: NULL]
+  "satellite_id" INTEGER
+  "host_type" INTEGER [not null, default: "1"]
+  "disabled" INTEGER
+  "usage_flag" INTEGER [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Hosts'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Ref: hosts.container_id > containers.id
+Ref: hosts.hosttemplate_id > hosttemplates.id
+Ref: hosts.check_period_id > timeperiods.id
+Ref: hosts.notify_period_id > timeperiods.id
+Ref: hosts.command_id > commands.id
+Ref: hosts.id < customvariables.object_id
+Ref: hosts.id < hostcommandargumentvalues.host_id
+Ref: hosts.id - agentconfigs.host_id
+Ref: hosts.id - grafana_userdashboard_metrics.host_id
+Ref: hosts.id < mkservicedata.host_id
+Ref: hosts.id < mksnmp.host_id
+Ref: hosts.id < last_used_mkagents.host_id
+Ref: hosts.id < hosts_to_autoreports.host_id
+Ref: hosts.id - imported_hosts.host_id
+Ref: hosts.id - prometheus_alert_rules.host_id
+Ref: hosts.id < mapitems.object_id
+Ref: hosts.id < maplines.object_id
+Ref: hosts.id < mapsummaryitems.object_id
+Table "hosts_to_containers" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    host_id [name: "host_id"]
+    container_id [name: "container_id"]
+  }
+}
+
+Ref: hosts_to_containers.container_id > containers.id
+Ref: hosts_to_containers.host_id > hosts.id
+
+Table "contactgroups_to_hosts" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contactgroup_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    contactgroup_id [name: "contactgroup_id"]
+    host_id [name: "host_id"]
+  }
+}
+
+Ref: contactgroups_to_hosts.contactgroup_id > contactgroups.id
+Ref: contactgroups_to_hosts.host_id > hosts.id
+
+Table "contacts_to_hosts" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contact_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    contact_id [name: "contact_id"]
+    host_id [name: "host_id"]
+  }
+}
+
+Ref: contacts_to_hosts.contact_id > contacts.id
+Ref: contacts_to_hosts.host_id > hosts.id
+
+Table "hosts_to_hostgroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "hostgroup_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    host_id [name: "host_id"]
+    hostgroup_id [name: "hostgroup_id"]
+  }
+}
+
+Ref: hosts_to_hostgroups.host_id > hosts.id
+Ref: hosts_to_hostgroups.hostgroup_id > hostgroups.id
+
+Table "hosts_to_parenthosts" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "parenthost_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    host_id [name: "host_id"]
+    parenthost_id [name: "parenthost_id"]
+  }
+}
+
+Ref: hosts_to_parenthosts.parenthost_id > hosts.id
+Ref: hosts_to_parenthosts.host_id > hosts.id
+
+
+Table "hosts_to_prometheus_exporters" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "prometheus_exporter_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+}
+
+Ref: hosts_to_prometheus_exporters.prometheus_exporter_id > prometheus_exporters.id
+Ref: hosts_to_prometheus_exporters.host_id > hosts.id
+
+
+
+
+
+
+Table "servicedependencies" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "container_id" INTEGER [default: NULL]
+  "inherits_parent" INTEGER [not null]
+  "timeperiod_id" INTEGER [default: NULL]
+  "execution_fail_on_ok" INTEGER [not null, default: NULL]
+  "execution_fail_on_warning" INTEGER [not null, default: NULL]
+  "execution_fail_on_unknown" INTEGER [not null, default: NULL]
+  "execution_fail_on_critical" INTEGER [not null, default: NULL]
+  "execution_fail_on_pending" INTEGER [not null, default: NULL]
+  "execution_none" INTEGER [not null, default: NULL]
+  "notification_fail_on_ok" INTEGER [not null, default: NULL]
+  "notification_fail_on_warning" INTEGER [not null, default: NULL]
+  "notification_fail_on_unknown" INTEGER [not null, default: NULL]
+  "notification_fail_on_critical" INTEGER [not null, default: NULL]
+  "notification_fail_on_pending" INTEGER [not null, default: NULL]
+  "notification_none" INTEGER [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Servicedependencies'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Ref: servicedependencies.container_id > containers.id
+Ref: servicedependencies.timeperiod_id > timeperiods.id
+
+Ref: services_to_servicedependencies.servicedependency_id > servicedependencies.id
+
+
+Table "servicegroups_to_servicedependencies" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "servicegroup_id" INTEGER [not null, default: NULL]
+  "servicedependency_id" INTEGER [not null, default: NULL]
+  "dependent" INTEGER [not null]
+
+  Indexes {
+    (servicegroup_id, dependent) [name: "servicegroup_id"]
+    (servicedependency_id, dependent) [name: "servicedependency_id"]
+  }
+}
+
+Ref: servicegroups_to_servicedependencies.servicegroup_id > servicegroups.id
+Ref: servicegroups_to_servicedependencies.servicedependency_id > servicedependencies.id
+
+
+
+Table "hosttemplates" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [not null, default: NULL]
+  "hosttemplatetype_id" INTEGER [not null, default: "1"]
+  "command_id" INTEGER [not null]
+  "check_command_args" VARCHAR(1000) [not null, default: NULL]
+  "eventhandler_command_id" INTEGER [not null]
+  "timeperiod_id" INTEGER [not null, default: NULL]
+  "check_interval" INTEGER [not null, default: "1"]
+  "retry_interval" INTEGER [not null, default: "3"]
+  "max_check_attempts" INTEGER [not null, default: "1"]
+  "first_notification_delay" FLOAT [not null]
+  "notification_interval" FLOAT [not null]
+  "notify_on_down" INTEGER [not null]
+  "notify_on_unreachable" INTEGER [not null]
+  "notify_on_recovery" INTEGER [not null]
+  "notify_on_flapping" INTEGER [not null]
+  "notify_on_downtime" INTEGER [not null]
+  "flap_detection_enabled" INTEGER [not null]
+  "flap_detection_on_up" INTEGER [not null]
+  "flap_detection_on_down" INTEGER [not null]
+  "flap_detection_on_unreachable" INTEGER [not null]
+  "low_flap_threshold" FLOAT [not null]
+  "high_flap_threshold" FLOAT [not null]
+  "process_performance_data" INTEGER [not null]
+  "freshness_checks_enabled" INTEGER [not null]
+  "freshness_threshold" INTEGER
+  "passive_checks_enabled" INTEGER [not null]
+  "event_handler_enabled" INTEGER [not null]
+  "active_checks_enabled" INTEGER [not null]
+  "retain_status_information" INTEGER [not null]
+  "retain_nonstatus_information" INTEGER [not null]
+  "notifications_enabled" INTEGER [not null]
+  "notes" VARCHAR(255) [not null, default: NULL]
+  "priority" INTEGER [not null, default: "1"]
+  "check_period_id" INTEGER [not null, default: NULL]
+  "notify_period_id" INTEGER [not null, default: NULL]
+  "tags" VARCHAR(255) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "host_url" VARCHAR(255) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Hosttemplates'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Ref: hosttemplates.container_id > containers.id
+Ref: hosttemplates.check_period_id > timeperiods.id
+Ref: hosttemplates.notify_period_id > timeperiods.id
+Ref: hosttemplates.command_id > commands.id
+Ref: hosttemplates.id < customvariables.object_id
+
+Ref: contactgroups_to_hosttemplates.contactgroup_id > contactgroups.id
+Ref: contactgroups_to_hosttemplates.hosttemplate_id > hosttemplates.id
+
+Table "contacts_to_hosttemplates" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contact_id" INTEGER [not null, default: NULL]
+  "hosttemplate_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    contact_id [name: "contact_id"]
+    hosttemplate_id [name: "hosttemplate_id"]
+  }
+}
+
+Ref: contacts_to_hosttemplates.contact_id > contacts.id
+Ref: contacts_to_hosttemplates.hosttemplate_id > hosttemplates.id
+
+Table "hosttemplates_to_hostgroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "hosttemplate_id" INTEGER [not null, default: NULL]
+  "hostgroup_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    hosttemplate_id [name: "hosttemplate_id"]
+    hostgroup_id [name: "hostgroup_id"]
+  }
+}
+
+Ref: hosttemplates_to_hostgroups.hosttemplate_id > hosttemplates.id
+Ref: hosttemplates_to_hostgroups.hostgroup_id > hostgroups.id
+
+Table "hosttemplates_to_prometheus_exporters" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "prometheus_exporter_id" INTEGER [not null, default: NULL]
+  "hosttemplate_id" INTEGER [not null, default: NULL]
+}
+
+Ref: hosttemplates_to_prometheus_exporters.prometheus_exporter_id > prometheus_exporters.id
+Ref: hosttemplates_to_prometheus_exporters.hosttemplate_id > hosttemplates.id
+
+
+
+Table "contacts_to_servicetemplates" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contact_id" INTEGER [not null, default: NULL]
+  "servicetemplate_id" INTEGER [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ContactsToServicetemplates'''
+
+  Indexes {
+    contact_id [name: "contact_id"]
+    servicetemplate_id [name: "servicetemplate_id"]
+  }
+}
+
+Table "proxies" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "ipaddress" VARCHAR(255) [not null, default: NULL]
+  "port" INTEGER [not null, default: NULL]
+  "enabled" BOOLEAN [not null, default: "1"]
+
+  Note: '''CakePHP table Object: Proxies'''
+}
+
+
+Table "documentations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "content" TEXT [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Documentations'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Table "messages_otd" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "title" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(1000) [not null, default: NULL]
+  "content" TEXT [default: NULL]
+  "style" VARCHAR(255) [not null, default: NULL]
+  "user_id" INTEGER [not null, default: NULL]
+  "date" DATE [not null, default: NULL]
+  "expiration_duration" INTEGER [default: NULL]
+  "notify_users" INTEGER [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: MessagesOtd'''
+
+  Indexes {
+    date [unique, name: "date"]
+  }
+}
+
+Ref: messages_otd.user_id > users.id
+Table "messages_otd_to_usergroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "message_otd_id" INTEGER [not null, default: NULL]
+  "usergroup_id" INTEGER [not null, default: NULL]
+}
+
+Ref: messages_otd_to_usergroups.usergroup_id > usergroups.id
+Ref: messages_otd_to_usergroups.message_otd_id > messages_otd.id
+
+
+Table "servicetemplategroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "description" VARCHAR(255) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Servicetemplategroups'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Ref: servicetemplategroups.container_id > containers.id
+Ref: servicetemplategroups.id < hostdefaults_to_servicetemplategroups.servicetemplategroup_id
+Table "servicetemplates_to_servicetemplategroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "servicetemplate_id" INTEGER [not null, default: NULL]
+  "servicetemplategroup_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    servicetemplategroup_id [name: "servicetemplategroup_id"]
+    servicetemplate_id [name: "servicetemplate_id"]
+  }
+}
+
+Ref: servicetemplates_to_servicetemplategroups.servicetemplate_id > servicetemplates.id
+Ref: servicetemplates_to_servicetemplategroups.servicetemplategroup_id > servicetemplategroups.id
+
+
+Table "cronjobs" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "task" VARCHAR(255) [not null, default: NULL]
+  "plugin" VARCHAR(255) [not null, default: "Core"]
+  "interval" INTEGER [default: NULL]
+  "enabled" BOOLEAN [not null, default: "1"]
+
+  Note: '''CakePHP table Object: Cronjobs'''
+}
+
+Ref: cronjobs.id - cronschedules.cronjob_id
+
+
+
+Table "hostgroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "container_id" INTEGER [not null]
+  "description" VARCHAR(255) [not null, default: NULL]
+  "hostgroup_url" VARCHAR(255) [default: NULL]
+
+  Note: '''CakePHP table Object: Hostgroups'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Ref: hostgroups.container_id > containers.id
+Ref: hostgroups.id < mapitems.object_id
+Ref: hostgroups.id < maplines.object_id
+Ref: hostgroups.id < mapsummaryitems.object_id
+
+
+
+
+
+Table "contacts" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "name" VARCHAR(64) [not null, default: NULL]
+  "description" VARCHAR(255) [not null, default: NULL]
+  "email" VARCHAR(255) [not null, default: NULL]
+  "phone" VARCHAR(64) [not null, default: NULL]
+  "user_id" INTEGER [default: NULL]
+  "host_timeperiod_id" INTEGER [not null]
+  "service_timeperiod_id" INTEGER [not null]
+  "host_notifications_enabled" INTEGER [not null]
+  "service_notifications_enabled" INTEGER [not null]
+  "notify_service_recovery" INTEGER [not null]
+  "notify_service_warning" INTEGER [not null]
+  "notify_service_unknown" INTEGER [not null]
+  "notify_service_critical" INTEGER [not null]
+  "notify_service_flapping" INTEGER [not null]
+  "notify_service_downtime" INTEGER [not null]
+  "notify_host_recovery" INTEGER [not null]
+  "notify_host_down" INTEGER [not null]
+  "notify_host_unreachable" INTEGER [not null]
+  "notify_host_flapping" INTEGER [not null]
+  "notify_host_downtime" INTEGER [not null]
+  "host_push_notifications_enabled" INTEGER [not null]
+  "service_push_notifications_enabled" INTEGER [not null]
+
+  Note: '''CakePHP table Object: Contacts'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+    (user_id, host_push_notifications_enabled, service_push_notifications_enabled) [name: "user_id"]
+  }
+}
+
+Ref: contacts.id < customvariables.object_id
+Ref: contacts.host_timeperiod_id > timeperiods.id
+Ref: contacts.service_timeperiod_id > timeperiods.id
+Table "contacts_to_containers" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contact_id" INTEGER [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    contact_id [name: "contact_id"]
+    container_id [name: "container_id"]
+  }
+}
+
+Ref: contacts_to_containers.container_id > containers.id
+Ref: contacts_to_containers.contact_id > contacts.id
+
+
+Ref: contacts_to_hostcommands.command_id > commands.id
+Ref: contacts_to_hostcommands.contact_id > contacts.id
+
+Table "contacts_to_servicecommands" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contact_id" INTEGER [not null, default: NULL]
+  "command_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    contact_id [name: "contact_id"]
+    command_id [name: "command_id"]
+  }
+}
+
+Ref: contacts_to_servicecommands.command_id > commands.id
+Ref: contacts_to_servicecommands.contact_id > contacts.id
+
+
+
+
+
+
+
+
+Table "aros_acos" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "aro_id" INTEGER [not null, default: NULL]
+  "aco_id" INTEGER [not null, default: NULL]
+  "_create" VARCHAR(2) [not null]
+  "_read" VARCHAR(2) [not null]
+  "_update" VARCHAR(2) [not null]
+  "_delete" VARCHAR(2) [not null]
+
+  Note: '''CakePHP table Object: ArosAcos'''
+
+  Indexes {
+    (aro_id, aco_id) [unique, name: "aro_id"]
+  }
+}
+
+Ref: aros_acos.aro_id > aros.id
+Ref: aros_acos.aco_id > acos.id
+
+Table "instantreports" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "evaluation" INTEGER [not null, default: NULL]
+  "type" INTEGER [not null, default: NULL]
+  "timeperiod_id" INTEGER [not null, default: NULL]
+  "reflection" INTEGER [not null, default: NULL]
+  "downtimes" INTEGER [not null, default: NULL]
+  "summary" INTEGER [not null, default: NULL]
+  "send_email" INTEGER [not null, default: NULL]
+  "send_interval" INTEGER [not null, default: NULL]
+  "last_send_date" DATETIME [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Instantreports'''
+}
+
+Ref: instantreports.container_id > containers.id
+Ref: instantreports.timeperiod_id > timeperiods.id
+Table "instantreports_to_users" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "instantreport_id" INTEGER [not null, default: NULL]
+  "user_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    instantreport_id [name: "instantreport_id"]
+    user_id [name: "user_id"]
+  }
+}
+
+Ref: instantreports_to_users.user_id > users.id
+Ref: instantreports_to_users.instantreport_id > instantreports.id
+
+Table "instantreports_to_hostgroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "instantreport_id" INTEGER [not null, default: NULL]
+  "hostgroup_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    instantreport_id [name: "instantreport_id"]
+    hostgroup_id [name: "hostgroup_id"]
+  }
+}
+
+Ref: instantreports_to_hostgroups.hostgroup_id > hostgroups.id
+Ref: instantreports_to_hostgroups.instantreport_id > instantreports.id
+
+Table "instantreports_to_hosts" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "instantreport_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    instantreport_id [name: "instantreport_id"]
+    host_id [name: "host_id"]
+  }
+}
+
+Ref: instantreports_to_hosts.host_id > hosts.id
+Ref: instantreports_to_hosts.instantreport_id > instantreports.id
+
+Table "instantreports_to_servicegroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "instantreport_id" INTEGER [not null, default: NULL]
+  "servicegroup_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    instantreport_id [name: "instantreport_id"]
+    servicegroup_id [name: "servicegroup_id"]
+  }
+}
+
+Ref: instantreports_to_servicegroups.servicegroup_id > servicegroups.id
+Ref: instantreports_to_servicegroups.instantreport_id > instantreports.id
+
+Table "instantreports_to_services" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "instantreport_id" INTEGER [not null, default: NULL]
+  "service_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    instantreport_id [name: "instantreport_id"]
+    service_id [name: "service_id"]
+  }
+}
+
+Ref: instantreports_to_services.service_id > services.id
+Ref: instantreports_to_services.instantreport_id > instantreports.id
+
+
+Table "configuration_queue" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "task" VARCHAR(255) [not null, default: NULL]
+  "data" VARCHAR(255) [not null, default: NULL]
+  "json_data" VARCHAR(2000) [default: NULL]
+  "module" VARCHAR(255) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ConfigurationQueue'''
+}
+
+
+Table "systemdowntimes" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "objecttype_id" INTEGER [default: NULL]
+  "object_id" INTEGER [default: NULL]
+  "downtimetype_id" INTEGER
+  "weekdays" VARCHAR(255) [default: NULL]
+  "day_of_month" VARCHAR(255) [default: NULL]
+  "from_time" VARCHAR(255) [not null, default: NULL]
+  "to_time" VARCHAR(255) [default: NULL]
+  "duration" INTEGER [not null]
+  "is_recursive" INTEGER [not null]
+  "comment" VARCHAR(255) [default: NULL]
+  "author" VARCHAR(255) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Systemdowntimes'''
+}
+
+Ref: systemdowntimes.object_id > hosts.id
+Ref: systemdowntimes.object_id > services.id
+Ref: systemdowntimes.object_id > hostgroups.id
+Ref: systemdowntimes.object_id > containers.id
+
+Table "timeperiods" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [default: NULL]
+  "calendar_id" INTEGER
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Timeperiods'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Ref: timeperiods.container_id > containers.id
+
+Table "dashboard_tabs" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "user_id" INTEGER [not null, default: NULL]
+  "position" INTEGER [not null, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "shared" BOOLEAN [not null]
+  "source_tab_id" INTEGER [default: NULL]
+  "check_for_updates" INTEGER [default: NULL]
+  "last_update" INTEGER
+  "locked" BOOLEAN [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: DashboardTabs'''
+}
+
+Ref: dashboard_tabs.user_id > users.id
+
+
+Table "serviceeventcommandargumentvalues" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "commandargument_id" INTEGER [not null, default: NULL]
+  "service_id" INTEGER [not null, default: NULL]
+  "value" VARCHAR(1000) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Serviceeventcommandargumentvalues'''
+}
+
+Ref: serviceeventcommandargumentvalues.commandargument_id > commandarguments.id
+
+Table "servicetemplatecommandargumentvalues" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "commandargument_id" INTEGER [not null, default: NULL]
+  "servicetemplate_id" INTEGER [not null, default: NULL]
+  "value" VARCHAR(1000) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Servicetemplatecommandargumentvalues'''
+}
+
+Ref: servicetemplatecommandargumentvalues.commandargument_id > commandarguments.id
+Ref: servicetemplatecommandargumentvalues.servicetemplate_id > servicetemplates.id
+
+
+Table "systemfailures" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "start_time" DATETIME [not null, default: NULL]
+  "end_time" DATETIME [not null, default: NULL]
+  "comment" VARCHAR(255) [not null, default: NULL]
+  "user_id" INTEGER [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Systemfailures'''
+}
+
+Ref: systemfailures.user_id > users.id
+
+Table "calendars" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [not null]
+  "container_id" INTEGER [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Calendars'''
+
+  Indexes {
+    (container_id, name) [unique, name: "container_id"]
+  }
+}
+
+Ref: calendars.container_id > containers.id
+
+Table "commands" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(255) [default: NULL]
+  "command_line" TEXT [default: NULL]
+  "command_type" INTEGER [not null, default: NULL]
+  "human_args" TEXT [default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "description" TEXT [default: NULL]
+
+  Note: '''CakePHP table Object: Commands'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+
+
+Table "deleted_hosts" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "hosttemplate_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [default: NULL]
+  "deleted_perfdata" INTEGER
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: DeletedHosts'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+
+Table "contacts_to_contactgroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "contact_id" INTEGER [not null, default: NULL]
+  "contactgroup_id" INTEGER [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ContactsToContactgroups'''
+
+  Indexes {
+    contact_id [name: "contact_id"]
+    contactgroup_id [name: "contactgroup_id"]
+  }
+}
+
+Table "cronschedules" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "cronjob_id" INTEGER [default: NULL]
+  "is_running" INTEGER [default: NULL]
+  "start_time" DATETIME [not null, default: NULL]
+  "end_time" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Cronschedules'''
+}
+
+Table "containers" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "containertype_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "parent_id" INTEGER [default: NULL]
+  "lft" INTEGER [not null, default: NULL]
+  "rght" INTEGER [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Containers'''
+}
+
+Ref: containers.id < contactgroups.container_id
+Ref: containers.id < locations.container_id
+Ref: containers.id < maps_to_containers.container_id
+
+
+
+
+
+
+
+Table "contactgroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "description" VARCHAR(255) [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Contactgroups'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Ref: contacts_to_contactgroups.contact_id > contacts.id
+Ref: contacts_to_contactgroups.contactgroup_id > contactgroups.id
+
+
+
+
+
+
+
+Table "servicetemplates" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "template_name" VARCHAR(255) [not null, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "container_id" INTEGER [default: NULL]
+  "servicetemplatetype_id" INTEGER [not null, default: "1"]
+  "check_period_id" INTEGER [default: NULL]
+  "notify_period_id" INTEGER [default: NULL]
+  "description" VARCHAR(255) [not null, default: NULL]
+  "command_id" INTEGER [not null]
+  "check_command_args" VARCHAR(1000) [not null, default: NULL]
+  "checkcommand_info" VARCHAR(255) [not null, default: NULL]
+  "eventhandler_command_id" INTEGER [not null]
+  "timeperiod_id" INTEGER [default: NULL]
+  "check_interval" INTEGER [not null, default: "1"]
+  "retry_interval" INTEGER [not null, default: "3"]
+  "max_check_attempts" INTEGER [not null, default: "1"]
+  "first_notification_delay" FLOAT [not null]
+  "notification_interval" FLOAT [not null]
+  "notify_on_warning" INTEGER [not null]
+  "notify_on_unknown" INTEGER [not null]
+  "notify_on_critical" INTEGER [not null]
+  "notify_on_recovery" INTEGER [not null]
+  "notify_on_flapping" INTEGER [not null]
+  "notify_on_downtime" INTEGER [not null]
+  "flap_detection_enabled" INTEGER [not null]
+  "flap_detection_on_ok" INTEGER [not null]
+  "flap_detection_on_warning" INTEGER [not null]
+  "flap_detection_on_unknown" INTEGER [not null]
+  "flap_detection_on_critical" INTEGER [not null]
+  "low_flap_threshold" FLOAT [not null]
+  "high_flap_threshold" FLOAT [not null]
+  "process_performance_data" INTEGER [not null]
+  "freshness_checks_enabled" INTEGER [not null]
+  "freshness_threshold" INTEGER
+  "passive_checks_enabled" INTEGER [not null]
+  "event_handler_enabled" INTEGER [not null]
+  "active_checks_enabled" INTEGER [not null]
+  "retain_status_information" INTEGER [not null]
+  "retain_nonstatus_information" INTEGER [not null]
+  "notifications_enabled" INTEGER [not null]
+  "notes" VARCHAR(255) [not null, default: NULL]
+  "priority" INTEGER [default: NULL]
+  "tags" VARCHAR(1500) [default: NULL]
+  "service_url" VARCHAR(255) [default: NULL]
+  "is_volatile" INTEGER [not null]
+  "check_freshness" INTEGER [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Servicetemplates'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Ref: servicetemplates.container_id > containers.id
+Ref: servicetemplates.check_period_id > timeperiods.id
+Ref: servicetemplates.notify_period_id > timeperiods.id
+Ref: servicetemplates.command_id > commands.id
+Ref: servicetemplates.id - agentchecks.servicetemplate_id
+Ref: servicetemplates.id < customvariables.object_id
+
+Ref: contactgroups_to_servicetemplates.contactgroup_id > contactgroups.id
+Ref: contactgroups_to_servicetemplates.servicetemplate_id > servicetemplates.id
+
+
+Ref: contacts_to_servicetemplates.contact_id > contacts.id
+Ref: contacts_to_servicetemplates.servicetemplate_id > servicetemplates.id
+
+
+
+
+
+Table "locations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "description" VARCHAR(255) [not null, default: NULL]
+  "latitude" FLOAT [default: NULL]
+  "longitude" FLOAT [default: NULL]
+  "timezone" VARCHAR(255) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Locations'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+  }
+}
+
+Table "hostcommandargumentvalues" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "commandargument_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "value" VARCHAR(1000) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Hostcommandargumentvalues'''
+}
+
+Ref: hostcommandargumentvalues.commandargument_id > commandarguments.id
+
+Table "agentchecks" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "plugin_name" VARCHAR(255) [not null, default: NULL]
+  "servicetemplate_id" INTEGER [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Agentchecks'''
+}
+
+Table "agentconfigs" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "host_id" INTEGER [default: NULL]
+  "port" INTEGER [default: NULL]
+  "use_https" BOOLEAN [not null]
+  "insecure" BOOLEAN [default: "1"]
+  "use_autossl" BOOLEAN [not null, default: "1"]
+  "autossl_successful" BOOLEAN [not null]
+  "use_push_mode" BOOLEAN [not null]
+  "basic_auth" BOOLEAN
+  "proxy" BOOLEAN [not null]
+  "username" VARCHAR(255) [default: NULL]
+  "password" VARCHAR(255) [default: NULL]
+  "push_noticed" BOOLEAN [not null]
+  "config" TEXT [not null, default: "_utf8mb4\'\'"]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Agentconfigs'''
+}
+
+
+
+Table "acos" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "parent_id" INTEGER [default: NULL]
+  "model" VARCHAR(255) [default: NULL]
+  "foreign_key" INTEGER [default: NULL]
+  "alias" VARCHAR(255) [default: NULL]
+  "lft" INTEGER [default: NULL]
+  "rght" INTEGER [default: NULL]
+
+  Note: '''CakePHP table Object: Acl.Acos'''
+}
+
+Ref: acos.id < acos.parent_id
+
+
+Table "aros" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "parent_id" INTEGER [default: NULL]
+  "model" VARCHAR(255) [default: NULL]
+  "foreign_key" INTEGER [default: NULL]
+  "alias" VARCHAR(255) [default: NULL]
+  "lft" INTEGER [default: NULL]
+  "rght" INTEGER [default: NULL]
+
+  Note: '''CakePHP table Object: Acl.Aros'''
+}
+
+Ref: aros.id < aros.parent_id
+
+
+
+Table "autoreport_quarterlies" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "year" INTEGER [not null, default: NULL]
+  "quarter" INTEGER [not null, default: NULL]
+  "filename" VARCHAR(255) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: AutoreportModule.AutoreportQuarterly'''
+}
+
+Table "autoreport_settings" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "configuration_option" VARCHAR(255) [not null, default: NULL]
+  "store_path" VARCHAR(255) [not null, default: NULL]
+  "notification_emails" VARCHAR(255) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: AutoreportModule.AutoreportSettings'''
+}
+
+Table "hosts_to_autoreports" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "autoreport_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "outage_duration" INTEGER [default: NULL]
+  "configuration_option" INTEGER [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: AutoreportModule.AutoreportsHostsMemberships'''
+
+  Indexes {
+    (autoreport_id, host_id) [unique, name: "autoreport_id"]
+    host_id [name: "host_id"]
+  }
+}
+
+Ref: hosts_to_autoreports.autoreport_id > autoreports.id
+
+Table "services_to_autoreports" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "autoreport_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "service_id" INTEGER [not null, default: NULL]
+  "outage_duration" INTEGER [default: NULL]
+  "configuration_option" INTEGER [not null]
+  "graph_settings" VARCHAR(10) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: AutoreportModule.AutoreportsServicesMemberships'''
+
+  Indexes {
+    (autoreport_id, service_id) [unique, name: "autoreport_id"]
+    service_id [name: "service_id"]
+  }
+}
+
+Ref: services_to_autoreports.autoreport_id > autoreports.id
+
+Table "autoreports_availability_log" {
+  "id" BIGINT [pk, not null, increment, default: NULL]
+  "autoreport_id" INTEGER [not null, default: NULL]
+  "report_interval" VARCHAR(20) [not null, default: NULL]
+  "last_update" BIGINT [not null, default: NULL]
+  "evaluation_start" BIGINT [not null, default: NULL]
+  "evaluation_end" BIGINT [not null, default: NULL]
+  "availability_total_time" INTEGER [not null, default: NULL]
+  "minimal_availability_time" INTEGER [not null, default: NULL]
+  "determined_availability_time" INTEGER [not null, default: NULL]
+  "determined_outage_time" INTEGER [not null, default: NULL]
+  "minimal_availability_percent" FLOAT(8) [default: NULL]
+  "determined_availability_percent" FLOAT [not null, default: NULL]
+  "maximal_number_outages" INTEGER [default: NULL]
+  "determined_number_outages" INTEGER [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: AutoreportModule.AutoreportAvailabilityLog'''
+
+  Indexes {
+    (autoreport_id, last_update) [name: "autoreport_id"]
+  }
+}
+
+Ref: autoreports_availability_log.autoreport_id > autoreports.id
+
+Table "autoreports" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(200) [not null, default: NULL]
+  "description" VARCHAR(255) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "timeperiod_id" INTEGER [not null, default: NULL]
+  "report_interval" VARCHAR(20) [not null, default: NULL]
+  "report_send_interval" VARCHAR(20) [not null, default: NULL]
+  "consider_downtimes" BOOLEAN [not null, default: NULL]
+  "last_send_date" DATETIME [not null, default: NULL]
+  "min_availability_percent" BOOLEAN [not null, default: "1"]
+  "min_availability" FLOAT(8) [default: NULL]
+  "check_hard_state" BOOLEAN [not null]
+  "use_start_time" INTEGER [not null]
+  "report_start_date" DATE [default: NULL]
+  "last_percent_value" FLOAT [not null, default: NULL]
+  "last_absolut_value" INTEGER [not null, default: NULL]
+  "show_time" INTEGER [not null, default: "1"]
+  "last_number_of_outages" INTEGER [not null]
+  "failure_statistic" INTEGER [not null]
+  "consider_holidays" INTEGER [not null]
+  "calendar_id" INTEGER [not null]
+  "max_number_of_outages" INTEGER [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: AutoreportModule.Autoreports'''
+}
+
+Ref: autoreports.container_id > containers.id
+Ref: autoreports.timeperiod_id > timeperiods.id
+Ref: autoreports.calendar_id > calendars.id
+Table "users_to_autoreports" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "autoreport_id" INTEGER [not null, default: NULL]
+  "user_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    user_id [name: "user_id"]
+  }
+}
+
+Ref: users_to_autoreports.user_id > users.id
+Ref: users_to_autoreports.autoreport_id > autoreports.id
+
+
+
+
+Table "axios_objects" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "axios_id" INTEGER [not null, default: NULL]
+  "element_id" INTEGER [not null, default: NULL]
+  "type" VARCHAR(255) [not null, default: NULL]
+
+  Note: '''CakePHP table Object: AxiosAssystModule.AxiosObjects'''
+
+  Indexes {
+    element_id [name: "element_id"]
+  }
+}
+
+Table "mkagents" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [not null, default: NULL]
+  "command_line" TEXT [not null, default: NULL]
+
+  Note: '''CakePHP table Object: CheckmkModule.Mkagents'''
+}
+
+Ref: mkagents.container_id > containers.id
+
+Table "mkchecks" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "servicetemplate_id" INTEGER [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: CheckmkModule.Mkchecks'''
+}
+
+Ref: mkchecks.servicetemplate_id > servicetemplates.id
+
+Table "mkservicedata" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "service_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "is_process" INTEGER [not null, default: NULL]
+  "check_name" VARCHAR(255) [not null, default: NULL]
+  "check_item" VARCHAR(255) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: CheckmkModule.Mkservicedata'''
+}
+
+Table "mksnmp" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "version" INTEGER [default: NULL]
+  "community" VARCHAR(255) [default: NULL]
+  "security_level" INTEGER [default: NULL]
+  "hash_algorithm" INTEGER [default: NULL]
+  "username" VARCHAR(255) [default: NULL]
+  "password" VARCHAR(255) [default: NULL]
+  "encryption_algorithm" INTEGER [default: NULL]
+  "encryption_password" VARCHAR(255) [default: NULL]
+  "enable_agent" BOOLEAN [not null, default: "1"]
+  "enable_snmp" BOOLEAN [not null, default: "1"]
+  "created" DATETIME [default: NULL]
+  "modified" DATETIME [default: NULL]
+
+  Note: '''CakePHP table Object: CheckmkModule.Mksnmp'''
+}
+
+Table "mk_sat_tasks" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "hostuuid" VARCHAR(255) [not null, default: NULL]
+  "task" VARCHAR(255) [not null, default: NULL]
+  "result" TEXT(4294967295) [not null, default: "_utf8mb4\'\'"]
+  "error" TEXT(4294967295) [not null, default: "_utf8mb4\'\'"]
+  "modified" DATETIME [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: CheckmkModule.MkSatTasks'''
+}
+
+Table "last_used_mkagents" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "agent_id" INTEGER [not null, default: NULL]
+
+  Note: '''CakePHP table Object: CheckmkModule.LastUsedMkagents'''
+}
+
+Table "designs" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "pageHeader" VARCHAR(255) [not null, default: NULL]
+  "pageSidebar" VARCHAR(255) [not null, default: NULL]
+  "pageSidebarGradient" VARCHAR(255) [not null, default: NULL]
+  "navTitle" VARCHAR(255) [not null, default: NULL]
+  "navMenu" VARCHAR(255) [not null, default: NULL]
+  "navMenuHover" VARCHAR(255) [not null, default: NULL]
+  "navLink" VARCHAR(255) [not null, default: NULL]
+  "navLinkHover" VARCHAR(255) [not null, default: NULL]
+  "navTab" VARCHAR(255) [not null, default: NULL]
+  "pageContent" VARCHAR(255) [not null, default: NULL]
+  "pageContentWrapper" VARCHAR(255) [not null, default: NULL]
+  "panelHdr" VARCHAR(255) [not null, default: NULL]
+  "panel" VARCHAR(255) [not null, default: NULL]
+  "breadcrumbNonLinks" VARCHAR(255) [not null, default: NULL]
+  "breadcrumbLinks" VARCHAR(255) [not null, default: NULL]
+  "tableBase" VARCHAR(255) [not null, default: NULL]
+  "tableBaseFont" VARCHAR(255) [not null, default: NULL]
+  "tableBorder" VARCHAR(255) [not null, default: NULL]
+  "tableHover" VARCHAR(255) [not null, default: NULL]
+  "tableHoverFont" VARCHAR(255) [not null, default: NULL]
+  "btnDefault" VARCHAR(255) [not null, default: NULL]
+  "btnDefaultFont" VARCHAR(255) [not null, default: NULL]
+  "btnDefaultBorder" VARCHAR(255) [not null, default: NULL]
+  "cardBase" VARCHAR(255) [not null, default: NULL]
+  "cardBaseFont" VARCHAR(255) [not null, default: NULL]
+  "cardHeader" VARCHAR(255) [not null, default: NULL]
+  "cardHeaderFont" VARCHAR(255) [not null, default: NULL]
+  "logoInHeader" TINYINT [not null, default: NULL]
+  "customcsstext" TEXT [default: NULL]
+
+  Note: '''CakePHP table Object: DesignModule.Designs'''
+}
+
+Table "satellite_status" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "status" INTEGER [default: NULL]
+  "last_error" TEXT [not null, default: NULL]
+  "last_export" DATETIME [not null, default: NULL]
+  "last_seen" DATETIME [not null, default: NULL]
+  "satellite_id" INTEGER [not null, default: NULL]
+  "last_error_time" DATETIME [default: NULL]
+
+  Note: '''CakePHP table Object: DistributeModule.SatelliteStatus'''
+
+  Indexes {
+    satellite_id [name: "satellite_id"]
+  }
+}
+
+Ref: satellite_status.satellite_id > satellites.id
+
+Table "satellite_tasks" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "satellite_id" INTEGER [not null, default: NULL]
+  "task" VARCHAR(255) [not null, default: NULL]
+  "status" INTEGER [not null]
+  "result" TEXT(4294967295) [default: NULL]
+  "error" TEXT(4294967295) [default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: DistributeModule.SatelliteTasks'''
+
+  Indexes {
+    satellite_id [name: "satellite_id"]
+  }
+}
+
+Ref: satellite_tasks.satellite_id > satellites.id
+
+Table "satellites" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "address" VARCHAR(128) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "sync_instance" INTEGER [not null]
+  "timezone" VARCHAR(128) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+  "sync_method" VARCHAR(255) [not null, default: "ssh"]
+  "login" VARCHAR(255) [default: NULL]
+  "port" INTEGER [default: NULL]
+  "private_key_path" VARCHAR(255) [default: NULL]
+  "url" VARCHAR(255) [default: NULL]
+  "remote_port" INTEGER [default: NULL]
+  "api_key" VARCHAR(255) [default: NULL]
+  "interval" INTEGER [default: NULL]
+  "timeout" INTEGER [default: NULL]
+  "use_proxy" INTEGER [default: NULL]
+  "proxy_url" VARCHAR(255) [default: NULL]
+  "verify_certificate" INTEGER [default: NULL]
+  "use_timesync" INTEGER [default: NULL]
+  "nsta_sync_instance" INTEGER [not null]
+
+  Note: '''CakePHP table Object: DistributeModule.Satellites'''
+}
+
+Ref: satellites.container_id > containers.id
+Ref: satellites.id < hosts.satellite_id
+Table "maps_to_satellites" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "satellite_id" INTEGER [not null, default: NULL]
+  "map_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    satellite_id [name: "satellite_id"]
+    map_id [name: "map_id"]
+  }
+}
+
+Ref: maps_to_satellites.map_id > maps.id
+Ref: maps_to_satellites.satellite_id > satellites.id
+
+
+Table "eventcorrelations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "parent_id" INTEGER [default: NULL]
+  "lft" INTEGER [not null, default: NULL]
+  "rght" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [default: NULL]
+  "service_id" INTEGER [default: NULL]
+  "operator" VARCHAR(12) [default: NULL]
+
+  Note: '''CakePHP table Object: EventcorrelationModule.Eventcorrelations'''
+
+  Indexes {
+    host_id [name: "host_id"]
+    service_id [name: "service_id"]
+    lft [name: "lft"]
+    rght [name: "rght"]
+    parent_id [name: "parent_id"]
+  }
+}
+
+Ref: eventcorrelations.host_id > hosts.id
+Ref: eventcorrelations.service_id > services.id
+
+Table "eventcorrelation_settings" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "configuration_option" VARCHAR(255) [not null, default: NULL]
+  "monitoring_system" VARCHAR(255) [not null, default: NULL]
+  "status_disabled_service" INTEGER [not null, default: "3"]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: EventcorrelationModule.EventcorrelationSettings'''
+}
+
+Table "grafana_configurations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "api_url" VARCHAR(200) [not null, default: NULL]
+  "api_key" VARCHAR(200) [not null, default: NULL]
+  "graphite_prefix" VARCHAR(200) [not null, default: NULL]
+  "use_https" INTEGER [not null, default: NULL]
+  "use_proxy" INTEGER [not null, default: NULL]
+  "ignore_ssl_certificate" INTEGER [not null, default: NULL]
+  "dashboard_style" VARCHAR(200) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: GrafanaModule.GrafanaConfigurations'''
+}
+
+Ref: grafana_configurations.id < hostgroups_to_grafanaconfigurations.configuration_id
+
+Table "grafana_dashboards" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "configuration_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "host_uuid" VARCHAR(200) [not null, default: NULL]
+  "grafana_uid" VARCHAR(255) [not null]
+
+  Note: '''CakePHP table Object: GrafanaModule.GrafanaDashboards'''
+}
+
+Ref: grafana_dashboards.configuration_id > grafana_configurations.id
+Ref: grafana_dashboards.host_id > hosts.id
+
+Table "hostgroups_to_grafanaconfigurations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "configuration_id" INTEGER [not null, default: NULL]
+  "hostgroup_id" INTEGER [not null, default: NULL]
+  "excluded" INTEGER [default: NULL]
+
+  Note: '''CakePHP table Object: GrafanaModule.GrafanaConfigurationHostgroupMembership'''
+
+  Indexes {
+    (configuration_id, hostgroup_id) [unique, name: "configuration_id"]
+  }
+}
+
+Ref: hostgroups_to_grafanaconfigurations.hostgroup_id > hostgroups.id
+
+Table "grafana_userdashboard_panels" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "userdashboard_id" INTEGER [not null, default: NULL]
+  "row" INTEGER [not null, default: NULL]
+  "unit" VARCHAR(255) [not null, default: "none"]
+  "title" VARCHAR(255) [not null]
+
+  Note: '''CakePHP table Object: GrafanaModule.GrafanaUserdashboardPanels'''
+}
+
+Ref: grafana_userdashboard_panels.userdashboard_id > grafana_userdashboards.id
+Ref: grafana_userdashboard_panels.id < grafana_userdashboard_metrics.panel_id
+
+Table "grafana_userdashboards" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "configuration_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(255) [not null]
+  "grafana_uid" VARCHAR(255) [not null]
+  "grafana_url" VARCHAR(255) [not null]
+
+  Note: '''CakePHP table Object: GrafanaModule.GrafanaUserdashboards'''
+}
+
+Ref: grafana_userdashboards.container_id > containers.id
+Ref: grafana_userdashboards.configuration_id > grafana_configurations.id
+
+Table "grafana_userdashboard_metrics" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "panel_id" INTEGER [not null, default: NULL]
+  "metric" VARCHAR(255) [not null, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "service_id" INTEGER [not null, default: NULL]
+  "color" VARCHAR(255) [default: NULL]
+
+  Note: '''CakePHP table Object: GrafanaModule.GrafanaUserdashboardMetrics'''
+}
+
+Table "external_systems" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(200) [not null, default: NULL]
+  "description" VARCHAR(255) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "api_url" VARCHAR(200) [not null, default: NULL]
+  "api_key" VARCHAR(200) [not null, default: NULL]
+  "use_https" INTEGER [not null, default: NULL]
+  "use_proxy" INTEGER [not null, default: NULL]
+  "ignore_ssl_certificate" INTEGER [not null, default: NULL]
+  "system_type" VARCHAR(200) [not null, default: NULL]
+  "json_data" VARCHAR(2000) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ImportModule.ExternalSystems'''
+}
+
+Ref: external_systems.id < importers.external_system_id
+Ref: external_systems.container_id > containers.id
+
+Table "hostdefaults_to_servicetemplates" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "hostdefault_id" INTEGER [not null, default: NULL]
+  "servicetemplate_id" INTEGER [not null, default: NULL]
+  "field" VARCHAR(255) [not null, default: NULL]
+  "regex" VARCHAR(1000) [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ImportModule.HostdefaultsToServicetemplates'''
+}
+
+Ref: hostdefaults_to_servicetemplates.hostdefault_id > hostdefaults.id
+Ref: hostdefaults_to_servicetemplates.servicetemplate_id > servicetemplates.id
+
+Table "importedhosts_to_agentchecks" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "importedhost_id" INTEGER [not null, default: NULL]
+  "agentcheck_id" INTEGER [not null, default: NULL]
+  "regex" VARCHAR(1000) [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ImportModule.ImportedHostsToAgentchecks'''
+
+  Indexes {
+    importedhost_id [name: "importedhost_id"]
+    agentcheck_id [name: "agentcheck_id"]
+  }
+}
+
+Ref: importedhosts_to_agentchecks.importedhost_id > imported_hosts.id
+Ref: importedhosts_to_agentchecks.agentcheck_id > agentchecks.id
+
+Table "imported_hosts" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "importer_id" INTEGER [not null, default: NULL]
+  "user_id" INTEGER [not null, default: NULL]
+  "host_id" INTEGER [default: NULL]
+  "identifier" VARCHAR(255) [not null]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [default: NULL]
+  "address" VARCHAR(255) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "hosttemplate_id" INTEGER [not null, default: NULL]
+  "satellite_id" INTEGER [not null, default: NULL]
+  "importedfile_id" INTEGER [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ImportModule.ImportedHosts'''
+}
+
+Ref: imported_hosts.importer_id > importers.id
+Ref: imported_hosts.container_id > containers.id
+Ref: imported_hosts.hosttemplate_id > hosttemplates.id
+Ref: imported_hosts.user_id > users.id
+Ref: imported_hosts.importedfile_id > imported_files.id
+Ref: imported_hosts.id < imported_services.importedhost_id
+Table "importedhosts_to_containers" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "importedhost_id" INTEGER [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    importedhost_id [name: "importedhost_id"]
+    container_id [name: "container_id"]
+  }
+}
+
+Ref: importedhosts_to_containers.container_id > containers.id
+Ref: importedhosts_to_containers.importedhost_id > imported_hosts.id
+
+Table "importedhosts_to_servicetemplates" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "importedhost_id" INTEGER [not null, default: NULL]
+  "servicetemplate_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    importedhost_id [name: "importedhost_id"]
+    servicetemplate_id [name: "servicetemplate_id"]
+  }
+}
+
+Ref: importedhosts_to_servicetemplates.servicetemplate_id > servicetemplates.id
+Ref: importedhosts_to_servicetemplates.importedhost_id > imported_hosts.id
+
+Table "importedhosts_to_servicetemplategroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "importedhost_id" INTEGER [not null, default: NULL]
+  "servicetemplategroup_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    importedhost_id [name: "importedhost_id"]
+    servicetemplategroup_id [name: "servicetemplategroup_id"]
+  }
+}
+
+Ref: importedhosts_to_servicetemplategroups.servicetemplategroup_id > servicetemplategroups.id
+Ref: importedhosts_to_servicetemplategroups.importedhost_id > imported_hosts.id
+
+
+Table "imported_services" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "importedhost_id" INTEGER [not null, default: NULL]
+  "servicetemplate_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(1500) [not null, default: NULL]
+  "servicetype_id" INTEGER [not null, default: "1"]
+  "json_data" TEXT [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ImportModule.ImportedServices'''
+
+  Indexes {
+    importedhost_id [name: "importedhost_id"]
+    servicetemplate_id [name: "servicetemplate_id"]
+  }
+}
+
+Ref: imported_services.servicetemplate_id > servicetemplates.id
+
+Table "importers" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [not null, default: NULL]
+  "hostdefault_id" INTEGER [not null, default: NULL]
+  "data_source" VARCHAR(255) [not null, default: NULL]
+  "hostname_regex" VARCHAR(2500) [not null]
+  "allow_empty_hosts" INTEGER [not null]
+  "force_delete" INTEGER [not null]
+  "keep_container_settings" INTEGER [not null, default: "1"]
+  "external_system_id" INTEGER [default: NULL]
+  "config" TEXT(4294967295) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ImportModule.Importers'''
+}
+
+Ref: importers.container_id > containers.id
+Ref: importers.hostdefault_id > hostdefaults.id
+Ref: importers.id < importers_to_hostdefaults.importer_id
+
+Table "hostdefaults_to_agentchecks" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "hostdefault_id" INTEGER [not null, default: NULL]
+  "agentcheck_id" INTEGER [not null, default: NULL]
+  "regex" VARCHAR(1000) [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ImportModule.HostdefaultsToAgentchecks'''
+}
+
+Ref: hostdefaults_to_agentchecks.hostdefault_id > hostdefaults.id
+Ref: hostdefaults_to_agentchecks.agentcheck_id > agentchecks.id
+
+Table "hostdefaults_to_servicetemplategroups" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "hostdefault_id" INTEGER [not null, default: NULL]
+  "servicetemplategroup_id" INTEGER [not null, default: NULL]
+  "field" VARCHAR(255) [not null, default: NULL]
+  "regex" VARCHAR(1000) [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ImportModule.HostdefaultsToServicetemplategroups'''
+}
+
+Ref: hostdefaults_to_servicetemplategroups.hostdefault_id > hostdefaults.id
+
+Table "importers_to_hostdefaults" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "importer_id" INTEGER [not null, default: NULL]
+  "hostdefault_id" INTEGER [not null, default: NULL]
+  "is_default" INTEGER [not null, default: NULL]
+  "field" VARCHAR(255) [not null, default: NULL]
+  "regex" VARCHAR(1000) [not null, default: NULL]
+  "order" INTEGER [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ImportModule.ImportersToHostdefaults'''
+}
+
+Ref: importers_to_hostdefaults.hostdefault_id > hostdefaults.id
+
+Table "satellite_push_agents" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "agentconfig_id" INTEGER [default: NULL]
+  "satellite_id" VARCHAR(255) [default: NULL]
+  "hostname" VARCHAR(255) [default: NULL]
+  "ipaddress" VARCHAR(255) [default: NULL]
+  "remote_address" VARCHAR(255) [default: NULL]
+  "http_x_forwarded_for" VARCHAR(255) [default: NULL]
+  "checkresults" TEXT(16777215) [default: NULL]
+  "last_update" DATETIME [not null, default: "CURRENT_TIMESTAMP"]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ImportModule.SatellitePushAgents'''
+
+  Indexes {
+    uuid [unique, name: "uuid"]
+    (uuid, satellite_id) [name: "uuid_2"]
+  }
+}
+
+Ref: satellite_push_agents.agentconfig_id > agentconfigs.id
+
+Table "imported_files" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "filename" VARCHAR(255) [not null, default: NULL]
+  "uuid" VARCHAR(37) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "importer_id" INTEGER [not null, default: NULL]
+  "user_id" INTEGER [not null, default: NULL]
+  "full_path" TEXT(16777215) [not null, default: NULL]
+  "uploaded_filename" VARCHAR(255) [not null, default: NULL]
+  "file_extension" VARCHAR(255) [not null, default: NULL]
+  "file_size" INTEGER [not null, default: NULL]
+  "checksum" VARCHAR(32) [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ImportModule.ImportedFiles'''
+
+  Indexes {
+    importer_id [name: "importer_id"]
+    user_id [name: "user_id"]
+  }
+}
+
+Ref: imported_files.container_id > containers.id
+Ref: imported_files.importer_id > importers.id
+Ref: imported_files.user_id > users.id
+
+Table "hostdefaults" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "description" VARCHAR(255) [default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "host_container_id" INTEGER [not null, default: NULL]
+  "hosttemplate_id" INTEGER [not null, default: NULL]
+  "satellite_id" INTEGER [not null, default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ImportModule.Hostdefaults'''
+}
+
+Ref: hostdefaults.container_id > containers.id
+Ref: hostdefaults.hosttemplate_id > hosttemplates.id
+Table "hostdefaults_to_containers" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "hostdefault_id" INTEGER [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    hostdefault_id [name: "hostdefault_id"]
+    container_id [name: "container_id"]
+  }
+}
+
+Ref: hostdefaults_to_containers.container_id > containers.id
+Ref: hostdefaults_to_containers.hostdefault_id > hostdefaults.id
+
+
+Table "maplines" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "map_id" INTEGER [not null, default: NULL]
+  "startX" INTEGER [not null]
+  "startY" INTEGER [not null]
+  "endX" INTEGER [not null]
+  "endY" INTEGER [not null]
+  "limit" INTEGER
+  "iconset" VARCHAR(128) [default: NULL]
+  "type" VARCHAR(20) [not null, default: NULL]
+  "object_id" INTEGER [default: NULL]
+  "z_index" INTEGER [not null]
+  "show_label" INTEGER [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: MapModule.Maplines'''
+}
+
+Ref: maplines.map_id > maps.id
+
+Table "mapitems" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "map_id" INTEGER [not null, default: NULL]
+  "x" INTEGER [not null]
+  "y" INTEGER [not null]
+  "limit" INTEGER
+  "iconset" VARCHAR(128) [not null, default: NULL]
+  "type" VARCHAR(20) [not null, default: NULL]
+  "object_id" INTEGER [not null, default: NULL]
+  "z_index" INTEGER [not null]
+  "show_label" INTEGER [not null]
+  "label_possition" INTEGER [not null, default: "2"]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: MapModule.Mapitems'''
+}
+
+Ref: mapitems.map_id > maps.id
+
+Table "map_uploads" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "upload_type" INTEGER [default: NULL]
+  "upload_name" VARCHAR(255) [not null, default: NULL]
+  "saved_name" VARCHAR(255) [not null, default: NULL]
+  "user_id" INTEGER [default: NULL]
+  "container_id" INTEGER [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: MapModule.MapUploads'''
+
+  Indexes {
+    saved_name [name: "saved_name"]
+    container_id [name: "container_id"]
+  }
+}
+
+Ref: map_uploads.user_id > users.id
+Ref: map_uploads.container_id > containers.id
+
+Table "rotations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "interval" INTEGER [not null, default: "60"]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: MapModule.Rotations'''
+}
+Table "rotations_to_containers" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "rotation_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    container_id [name: "container_id"]
+    rotation_id [name: "rotation_id"]
+  }
+}
+
+Ref: rotations_to_containers.container_id > containers.id
+Ref: rotations_to_containers.rotation_id > rotations.id
+
+Table "maps_to_rotations" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "map_id" INTEGER [not null, default: NULL]
+  "rotation_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    map_id [name: "map_id"]
+    rotation_id [name: "rotation_id"]
+  }
+}
+
+Ref: maps_to_rotations.map_id > maps.id
+Ref: maps_to_rotations.rotation_id > rotations.id
+
+
+Table "maps" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "title" VARCHAR(255) [not null, default: NULL]
+  "background" VARCHAR(128) [default: NULL]
+  "refresh_interval" INTEGER [not null]
+  "json_data" VARCHAR(2000) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: MapModule.Maps'''
+}
+
+Ref: maps.id < mapgadgets.map_id
+Ref: maps.id < mapicons.map_id
+Ref: maps.id < mapsummaryitems.map_id
+Ref: maps.id < maptexts.map_id
+Table "maps_to_containers" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "map_id" INTEGER [not null, default: NULL]
+
+  Indexes {
+    container_id [name: "container_id"]
+    map_id [name: "map_id"]
+  }
+}
+
+Ref: maps_to_containers.map_id > maps.id
+
+
+
+
+Table "mapsummaryitems" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "map_id" INTEGER [not null, default: NULL]
+  "x" INTEGER [not null]
+  "y" INTEGER [not null]
+  "size_x" INTEGER [not null, default: "100"]
+  "size_y" INTEGER [not null, default: "100"]
+  "limit" INTEGER
+  "type" VARCHAR(20) [not null, default: NULL]
+  "object_id" INTEGER [not null, default: NULL]
+  "z_index" INTEGER [not null]
+  "show_label" INTEGER [not null]
+  "label_possition" INTEGER [not null, default: "2"]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: MapModule.Mapsummaryitems'''
+}
+
+Table "mapgadgets" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "map_id" INTEGER [not null, default: NULL]
+  "x" INTEGER [not null]
+  "y" INTEGER [not null]
+  "size_x" INTEGER [not null]
+  "size_y" INTEGER [not null]
+  "limit" INTEGER
+  "gadget" VARCHAR(128) [default: NULL]
+  "type" VARCHAR(20) [not null, default: NULL]
+  "object_id" INTEGER [not null, default: NULL]
+  "transparent_background" INTEGER [not null]
+  "show_label" INTEGER [not null, default: "1"]
+  "font_size" INTEGER [not null, default: "13"]
+  "z_index" INTEGER [not null]
+  "metric" VARCHAR(256) [default: NULL]
+  "output_type" VARCHAR(256) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: MapModule.Mapgadgets'''
+}
+
+Table "maptexts" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "map_id" INTEGER [not null, default: NULL]
+  "x" INTEGER [not null]
+  "y" INTEGER [not null]
+  "text" VARCHAR(256) [not null]
+  "font_size" INTEGER [not null, default: "11"]
+  "z_index" INTEGER [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: MapModule.Maptexts'''
+}
+
+Table "mapicons" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "map_id" INTEGER [not null, default: NULL]
+  "x" INTEGER [not null]
+  "y" INTEGER [not null]
+  "icon" VARCHAR(128) [not null, default: NULL]
+  "z_index" INTEGER [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: MapModule.Mapicons'''
+}
+
+Table "mattermost_settings" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "webhook_url" VARCHAR(255) [not null]
+  "two_way" BOOLEAN [not null]
+  "apikey" VARCHAR(255) [not null]
+  "use_proxy" BOOLEAN [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: MattermostModule.MattermostSettings'''
+}
+
+Table "openstreetmap_settings" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "server_url" VARCHAR(255) [default: NULL]
+  "reload_interval" INTEGER [default: "60"]
+  "state_filter" INTEGER [default: "31"]
+  "hide_not_monitored_locations" INTEGER [not null, default: "1"]
+  "hide_empty_locations" INTEGER [default: "1"]
+  "highlight_down_ack" INTEGER [not null, default: "1"]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: OpenstreetmapModule.OpenstreetmapSettings'''
+}
+
+Table "pagerduty_queues" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "host_uuid" VARCHAR(255) [default: NULL]
+  "host_state" INTEGER [default: NULL]
+  "service_uuid" VARCHAR(255) [default: NULL]
+  "service_state" INTEGER [default: NULL]
+  "notificationtype" VARCHAR(255) [default: NULL]
+  "type" INTEGER [default: NULL]
+  "output" VARCHAR(255) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: PagerdutyModule.PagerdutyQueues'''
+}
+
+Table "pagerduty_settings" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "integration_key" VARCHAR(255) [default: NULL]
+  "api_key" VARCHAR(255) [default: NULL]
+  "api_url" VARCHAR(255) [default: NULL]
+  "two_way" BOOLEAN [not null]
+  "use_proxy" BOOLEAN [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: PagerdutyModule.PagerdutySettings'''
+}
+
+Table "prometheus_exporters" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "name" VARCHAR(255) [not null, default: NULL]
+  "container_id" INTEGER [not null, default: NULL]
+  "metric_path" VARCHAR(128) [not null, default: "/metrics"]
+  "port" INTEGER [not null, default: NULL]
+  "scrape_interval" VARCHAR(128) [not null, default: NULL]
+  "scrape_timeout" VARCHAR(128) [not null, default: "15s"]
+  "service" VARCHAR(255) [not null, default: NULL]
+  "yaml" TEXT [not null, default: NULL]
+  "add_target_port" BOOLEAN [not null, default: "1"]
+
+  Note: '''CakePHP table Object: PrometheusModule.PrometheusExporters'''
+}
+
+Ref: prometheus_exporters.container_id > containers.id
+
+
+
+Table "prometheus_alert_rules" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "host_id" INTEGER [not null, default: NULL]
+  "service_id" INTEGER [not null, default: NULL]
+  "promql" VARCHAR(2500) [not null]
+  "unit" VARCHAR(255) [not null]
+  "threshold_type" VARCHAR(128) [not null, default: "scalar"]
+  "warning_min" FLOAT [not null, default: NULL]
+  "warning_max" FLOAT [default: NULL]
+  "critical_min" FLOAT [not null, default: NULL]
+  "critical_max" FLOAT [default: NULL]
+  "warning_longer_as" VARCHAR(128) [not null, default: "60s"]
+  "critical_longer_as" VARCHAR(128) [not null, default: "60s"]
+  "warning_operator" VARCHAR(10) [default: NULL]
+  "critical_operator" VARCHAR(10) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: PrometheusModule.PrometheusAlertRules'''
+}
+
+Table "servicenow_settings" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "domain" VARCHAR(255) [default: NULL]
+  "user_id" VARCHAR(255) [default: NULL]
+  "user_password" VARCHAR(255) [default: NULL]
+  "assignment_group" VARCHAR(255) [default: NULL]
+  "assigned_to" VARCHAR(255) [default: NULL]
+  "business_service" VARCHAR(255) [default: NULL]
+  "impact" INTEGER [default: "1"]
+  "urgency" INTEGER [default: "1"]
+  "recovery_state" INTEGER [default: "6"]
+  "two_way" BOOLEAN [not null]
+  "use_proxy" BOOLEAN [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ServicenowModule.ServicenowSettings'''
+}
+
+Table "servicenow_hostspecific_settings" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "host_uuid" VARCHAR(255) [default: NULL]
+  "assignment_group" VARCHAR(255) [default: NULL]
+  "assigned_to" VARCHAR(255) [default: NULL]
+  "business_service" VARCHAR(255) [default: NULL]
+  "impact" INTEGER [default: NULL]
+  "urgency" INTEGER [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ServicenowModule.ServicenowHostspecificSettings'''
+}
+
+Table "servicenow_incidents" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "incident_id" VARCHAR(255) [default: NULL]
+  "sys_id" VARCHAR(255) [default: NULL]
+  "state" INTEGER [default: "1"]
+  "resolution_code" VARCHAR(255) [default: NULL]
+  "resolution_notes" VARCHAR(255) [default: NULL]
+  "host_uuid" VARCHAR(255) [default: NULL]
+  "service_uuid" VARCHAR(255) [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ServicenowModule.ServicenowIncidents'''
+}
+
+Table "servicenow_servicespecific_settings" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "service_uuid" VARCHAR(255) [default: NULL]
+  "assignment_group" VARCHAR(255) [default: NULL]
+  "assigned_to" VARCHAR(255) [default: NULL]
+  "business_service" VARCHAR(255) [default: NULL]
+  "impact" INTEGER [default: NULL]
+  "urgency" INTEGER [default: NULL]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: ServicenowModule.ServicenowServicespecificSettings'''
+}
+
+Table "slack_settings" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "api_url" VARCHAR(255) [default: NULL]
+  "oauth_access_token" VARCHAR(255) [default: NULL]
+  "two_way" BOOLEAN [not null]
+  "use_proxy" BOOLEAN [not null]
+  "created" DATETIME [not null, default: NULL]
+  "modified" DATETIME [not null, default: NULL]
+
+  Note: '''CakePHP table Object: SlackModule.SlackSettings'''
+}
+
+Table "snmptt" {
+  "id" INTEGER [pk, not null, increment, default: NULL]
+  "eventname" VARCHAR(50) [not null, default: NULL]
+  "eventid" VARCHAR(50) [not null, default: NULL]
+  "trapoid" VARCHAR(100) [not null, default: NULL]
+  "enterprise" VARCHAR(100) [not null, default: NULL]
+  "community" VARCHAR(20) [not null, default: NULL]
+  "hostname" VARCHAR(100) [not null, default: NULL]
+  "agentip" VARCHAR(16) [not null, default: NULL]
+  "category" VARCHAR(20) [not null, default: NULL]
+  "severity" VARCHAR(20) [not null, default: NULL]
+  "uptime" VARCHAR(20) [not null, default: NULL]
+  "traptime" VARCHAR(30) [not null, default: NULL]
+  "formatline" VARCHAR(255) [not null, default: NULL]
+  "trapread" INTEGER [not null]
+
+  Note: '''CakePHP table Object: SnmpTrapModule.Snmptt'''
+
+  Indexes {
+    (hostname, severity) [name: "snmptt_host_sev"]
+  }
+}
+
+Table "statusengine_perfdata" {
+  "hostname" VARCHAR(255) [default: NULL]
+  "service_description" VARCHAR(255) [default: NULL]
+  "label" VARCHAR(255) [default: NULL]
+  "timestamp" BIGINT [not null, default: NULL]
+  "timestamp_unix" BIGINT [not null, default: NULL]
+  "value" FLOAT [default: NULL]
+  "unit" VARCHAR(10) [default: NULL]
+
+  Note: '''CakePHP table Object: Statusengine3Module.Perfdata'''
+
+  Indexes {
+    (hostname, service_description, label, timestamp_unix) [name: "metric"]
+    timestamp_unix [name: "timestamp_unix"]
+  }
+}
+
+Table "statusengine_servicestatus" {
+  "hostname" VARCHAR(255) [pk, not null, default: NULL]
+  "service_description" VARCHAR(255) [pk, not null, default: NULL]
+  "status_update_time" BIGINT [not null, default: NULL]
+  "output" VARCHAR(1024) [default: NULL]
+  "long_output" VARCHAR(8192) [default: NULL]
+  "perfdata" VARCHAR(2048) [default: NULL]
+  "current_state" SMALLINT
+  "current_check_attempt" SMALLINT
+  "max_check_attempts" SMALLINT
+  "last_check" BIGINT [not null, default: NULL]
+  "next_check" BIGINT [not null, default: NULL]
+  "is_passive_check" BOOLEAN
+  "last_state_change" BIGINT [not null, default: NULL]
+  "last_hard_state_change" BIGINT [not null, default: NULL]
+  "last_hard_state" SMALLINT
+  "is_hardstate" BOOLEAN
+  "last_notification" BIGINT [not null, default: NULL]
+  "next_notification" BIGINT [not null, default: NULL]
+  "notifications_enabled" BOOLEAN
+  "problem_has_been_acknowledged" BOOLEAN
+  "acknowledgement_type" SMALLINT
+  "passive_checks_enabled" BOOLEAN
+  "active_checks_enabled" BOOLEAN
+  "event_handler_enabled" BOOLEAN
+  "flap_detection_enabled" BOOLEAN
+  "is_flapping" BOOLEAN
+  "latency" FLOAT
+  "execution_time" FLOAT
+  "scheduled_downtime_depth" SMALLINT
+  "process_performance_data" BOOLEAN
+  "obsess_over_service" BOOLEAN
+  "normal_check_interval" INTEGER
+  "retry_check_interval" INTEGER
+  "check_timeperiod" VARCHAR(255) [default: NULL]
+  "node_name" VARCHAR(255) [default: NULL]
+  "last_time_ok" BIGINT [not null, default: NULL]
+  "last_time_warning" BIGINT [not null, default: NULL]
+  "last_time_critical" BIGINT [not null, default: NULL]
+  "last_time_unknown" BIGINT [not null, default: NULL]
+  "current_notification_number" INTEGER
+  "percent_state_change" FLOAT
+  "event_handler" VARCHAR(255) [default: NULL]
+  "check_command" VARCHAR(255) [default: NULL]
+
+  Note: '''CakePHP table Object: Statusengine3Module.Servicestatus'''
+
+  Indexes {
+    service_description [name: "service_description"]
+    (current_state, node_name) [name: "current_state_node"]
+    (problem_has_been_acknowledged, scheduled_downtime_depth, current_state) [name: "issues"]
+  }
+}
+
+Table "statusengine_logentries" {
+  "id" BIGINT [pk, not null, increment, default: NULL]
+  "entry_time" BIGINT [pk, not null, default: NULL]
+  "logentry_type" INTEGER
+  "logentry_data" VARCHAR(2048) [default: NULL]
+  "node_name" VARCHAR(255) [default: NULL]
+
+  Note: '''CakePHP table Object: Statusengine3Module.Logentries'''
+
+  Indexes {
+    (entry_time, node_name) [name: "logentries_se"]
+  }
+}
+
+Table "statusengine_servicechecks" {
+  "service_description" VARCHAR(255) [pk, not null, default: NULL]
+  "start_time" BIGINT [pk, not null, default: NULL]
+  "start_time_usec" INTEGER [pk, not null]
+  "hostname" VARCHAR(255) [default: NULL]
+  "state" SMALLINT
+  "is_hardstate" BOOLEAN
+  "end_time" BIGINT [not null, default: NULL]
+  "output" VARCHAR(1024) [default: NULL]
+  "timeout" SMALLINT
+  "early_timeout" BOOLEAN
+  "latency" FLOAT
+  "execution_time" FLOAT
+  "perfdata" VARCHAR(2048) [default: NULL]
+  "command" VARCHAR(1024) [default: NULL]
+  "current_check_attempt" SMALLINT
+  "max_check_attempts" SMALLINT
+  "long_output" VARCHAR(8192) [default: NULL]
+
+  Note: '''CakePHP table Object: Statusengine3Module.Servicechecks'''
+
+  Indexes {
+    (hostname, service_description, start_time) [name: "servicename"]
+  }
+}
+
+Table "statusengine_hoststatus" {
+  "hostname" VARCHAR(255) [pk, not null, default: NULL]
+  "status_update_time" BIGINT [not null, default: NULL]
+  "output" VARCHAR(1024) [default: NULL]
+  "long_output" VARCHAR(8192) [default: NULL]
+  "perfdata" VARCHAR(2048) [default: NULL]
+  "current_state" SMALLINT
+  "current_check_attempt" SMALLINT
+  "max_check_attempts" SMALLINT
+  "last_check" BIGINT [not null, default: NULL]
+  "next_check" BIGINT [not null, default: NULL]
+  "is_passive_check" BOOLEAN
+  "last_state_change" BIGINT [not null, default: NULL]
+  "last_hard_state_change" BIGINT [not null, default: NULL]
+  "last_hard_state" SMALLINT
+  "is_hardstate" BOOLEAN
+  "last_notification" BIGINT [not null, default: NULL]
+  "next_notification" BIGINT [not null, default: NULL]
+  "notifications_enabled" BOOLEAN
+  "problem_has_been_acknowledged" BOOLEAN
+  "acknowledgement_type" SMALLINT
+  "passive_checks_enabled" BOOLEAN
+  "active_checks_enabled" BOOLEAN
+  "event_handler_enabled" BOOLEAN
+  "flap_detection_enabled" BOOLEAN
+  "is_flapping" BOOLEAN
+  "latency" FLOAT
+  "execution_time" FLOAT
+  "scheduled_downtime_depth" SMALLINT
+  "process_performance_data" BOOLEAN
+  "obsess_over_host" BOOLEAN
+  "normal_check_interval" INTEGER
+  "retry_check_interval" INTEGER
+  "check_timeperiod" VARCHAR(255) [default: NULL]
+  "node_name" VARCHAR(255) [default: NULL]
+  "last_time_up" BIGINT [not null, default: NULL]
+  "last_time_down" BIGINT [not null, default: NULL]
+  "last_time_unreachable" BIGINT [not null, default: NULL]
+  "current_notification_number" INTEGER
+  "percent_state_change" FLOAT
+  "event_handler" VARCHAR(255) [default: NULL]
+  "check_command" VARCHAR(255) [default: NULL]
+
+  Note: '''CakePHP table Object: Statusengine3Module.Hoststatus'''
+
+  Indexes {
+    (current_state, node_name) [name: "current_state_node"]
+    (problem_has_been_acknowledged, scheduled_downtime_depth, current_state) [name: "issues"]
+  }
+}
+
+Table "statusengine_host_statehistory" {
+  "hostname" VARCHAR(255) [pk, not null, default: NULL]
+  "state_time" BIGINT [pk, not null, default: NULL]
+  "state_time_usec" INTEGER [pk, not null]
+  "state_change" BOOLEAN
+  "state" SMALLINT
+  "is_hardstate" BOOLEAN
+  "current_check_attempt" SMALLINT
+  "max_check_attempts" SMALLINT
+  "last_state" SMALLINT
+  "last_hard_state" SMALLINT
+  "output" VARCHAR(1024) [default: NULL]
+  "long_output" VARCHAR(8192) [default: NULL]
+
+  Note: '''CakePHP table Object: Statusengine3Module.StatehistoryHosts'''
+
+  Indexes {
+    (hostname, state_time) [name: "hostname_time"]
+  }
+}
+
+Table "statusengine_service_scheduleddowntimes" {
+  "hostname" VARCHAR(255) [pk, not null, default: NULL]
+  "service_description" VARCHAR(255) [pk, not null, default: NULL]
+  "internal_downtime_id" INTEGER [pk, not null, default: NULL]
+  "scheduled_start_time" BIGINT [pk, not null, default: NULL]
+  "node_name" VARCHAR(255) [pk, not null, default: NULL]
+  "entry_time" BIGINT [not null, default: NULL]
+  "author_name" VARCHAR(255) [default: NULL]
+  "comment_data" VARCHAR(1024) [default: NULL]
+  "triggered_by_id" INTEGER [default: NULL]
+  "is_fixed" BOOLEAN
+  "duration" INTEGER [default: NULL]
+  "scheduled_end_time" BIGINT [not null, default: NULL]
+  "was_started" BOOLEAN
+  "actual_start_time" BIGINT [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Statusengine3Module.StatusengineServiceScheduleddowntimes'''
+}
+
+Table "statusengine_hostchecks" {
+  "hostname" VARCHAR(255) [pk, not null, default: NULL]
+  "start_time" BIGINT [pk, not null, default: NULL]
+  "start_time_usec" INTEGER [pk, not null]
+  "state" SMALLINT
+  "is_hardstate" BOOLEAN
+  "end_time" BIGINT [not null, default: NULL]
+  "output" VARCHAR(1024) [default: NULL]
+  "timeout" SMALLINT
+  "early_timeout" BOOLEAN
+  "latency" FLOAT
+  "execution_time" FLOAT
+  "perfdata" VARCHAR(2048) [default: NULL]
+  "command" VARCHAR(1024) [default: NULL]
+  "current_check_attempt" SMALLINT
+  "max_check_attempts" SMALLINT
+  "long_output" VARCHAR(8192) [default: NULL]
+
+  Note: '''CakePHP table Object: Statusengine3Module.Hostchecks'''
+
+  Indexes {
+    (hostname, start_time) [name: "hostname"]
+    (start_time, end_time) [name: "times"]
+  }
+}
+
+Table "statusengine_host_notifications" {
+  "hostname" VARCHAR(255) [pk, not null, default: NULL]
+  "start_time" BIGINT [pk, not null, default: NULL]
+  "start_time_usec" INTEGER [pk, not null]
+  "contact_name" VARCHAR(1024) [default: NULL]
+  "command_name" VARCHAR(1024) [default: NULL]
+  "command_args" VARCHAR(1024) [default: NULL]
+  "state" SMALLINT
+  "end_time" BIGINT [not null, default: NULL]
+  "reason_type" SMALLINT
+  "output" VARCHAR(1024) [default: NULL]
+  "ack_author" VARCHAR(255) [default: NULL]
+  "ack_data" VARCHAR(1024) [default: NULL]
+
+  Note: '''CakePHP table Object: Statusengine3Module.NotificationHosts'''
+
+  Indexes {
+    hostname [name: "hostname"]
+    start_time [name: "start_time"]
+  }
+}
+
+Table "statusengine_service_notifications" {
+  "service_description" VARCHAR(255) [pk, not null, default: NULL]
+  "start_time" BIGINT [pk, not null, default: NULL]
+  "start_time_usec" INTEGER [pk, not null]
+  "hostname" VARCHAR(255) [default: NULL]
+  "contact_name" VARCHAR(1024) [default: NULL]
+  "command_name" VARCHAR(1024) [default: NULL]
+  "command_args" VARCHAR(1024) [default: NULL]
+  "state" SMALLINT
+  "end_time" BIGINT [not null, default: NULL]
+  "reason_type" SMALLINT
+  "output" VARCHAR(1024) [default: NULL]
+  "ack_author" VARCHAR(255) [default: NULL]
+  "ack_data" VARCHAR(1024) [default: NULL]
+
+  Note: '''CakePHP table Object: Statusengine3Module.NotificationServices'''
+
+  Indexes {
+    start_time [name: "start_time"]
+    (hostname, service_description) [name: "servicename"]
+  }
+}
+
+Table "statusengine_host_downtimehistory" {
+  "hostname" VARCHAR(255) [pk, not null, default: NULL]
+  "internal_downtime_id" INTEGER [pk, not null, default: NULL]
+  "scheduled_start_time" BIGINT [pk, not null, default: NULL]
+  "node_name" VARCHAR(255) [pk, not null, default: NULL]
+  "entry_time" BIGINT [not null, default: NULL]
+  "entry_time_usec" INTEGER [not null]
+  "author_name" VARCHAR(255) [default: NULL]
+  "comment_data" VARCHAR(1024) [default: NULL]
+  "triggered_by_id" INTEGER [default: NULL]
+  "is_fixed" BOOLEAN
+  "duration" INTEGER [default: NULL]
+  "scheduled_end_time" BIGINT [not null, default: NULL]
+  "was_started" BOOLEAN
+  "actual_start_time" BIGINT [not null, default: NULL]
+  "actual_end_time" BIGINT [not null, default: NULL]
+  "was_cancelled" BOOLEAN
+
+  Note: '''CakePHP table Object: Statusengine3Module.DowntimeHosts'''
+
+  Indexes {
+    (hostname, entry_time, entry_time_usec, scheduled_start_time, scheduled_end_time, was_cancelled) [name: "reports"]
+    (hostname, scheduled_start_time, scheduled_end_time, was_cancelled) [name: "list"]
+  }
+}
+
+Table "statusengine_host_scheduleddowntimes" {
+  "hostname" VARCHAR(255) [pk, not null, default: NULL]
+  "internal_downtime_id" INTEGER [pk, not null, default: NULL]
+  "scheduled_start_time" BIGINT [pk, not null, default: NULL]
+  "node_name" VARCHAR(255) [pk, not null, default: NULL]
+  "entry_time" BIGINT [not null, default: NULL]
+  "author_name" VARCHAR(255) [default: NULL]
+  "comment_data" VARCHAR(1024) [default: NULL]
+  "triggered_by_id" INTEGER [default: NULL]
+  "is_fixed" BOOLEAN
+  "duration" INTEGER [default: NULL]
+  "scheduled_end_time" BIGINT [not null, default: NULL]
+  "was_started" BOOLEAN
+  "actual_start_time" BIGINT [not null, default: NULL]
+
+  Note: '''CakePHP table Object: Statusengine3Module.StatusengineHostScheduleddowntimes'''
+}
+
+Table "statusengine_service_downtimehistory" {
+  "hostname" VARCHAR(255) [pk, not null, default: NULL]
+  "service_description" VARCHAR(255) [pk, not null, default: NULL]
+  "internal_downtime_id" INTEGER [pk, not null, default: NULL]
+  "scheduled_start_time" BIGINT [pk, not null, default: NULL]
+  "node_name" VARCHAR(255) [pk, not null, default: NULL]
+  "entry_time" BIGINT [not null, default: NULL]
+  "entry_time_usec" INTEGER [not null]
+  "author_name" VARCHAR(255) [default: NULL]
+  "comment_data" VARCHAR(1024) [default: NULL]
+  "triggered_by_id" INTEGER [default: NULL]
+  "is_fixed" BOOLEAN
+  "duration" INTEGER [default: NULL]
+  "scheduled_end_time" BIGINT [not null, default: NULL]
+  "was_started" BOOLEAN
+  "actual_start_time" BIGINT [not null, default: NULL]
+  "actual_end_time" BIGINT [not null, default: NULL]
+  "was_cancelled" BOOLEAN
+
+  Note: '''CakePHP table Object: Statusengine3Module.DowntimeServices'''
+
+  Indexes {
+    (service_description, entry_time, entry_time_usec, scheduled_start_time, scheduled_end_time, was_cancelled) [name: "reports"]
+    (service_description, scheduled_start_time, scheduled_end_time, was_cancelled) [name: "report"]
+  }
+}
+
+Table "statusengine_service_statehistory" {
+  "service_description" VARCHAR(255) [pk, not null, default: NULL]
+  "state_time" BIGINT [pk, not null, default: NULL]
+  "state_time_usec" INTEGER [pk, not null]
+  "hostname" VARCHAR(255) [default: NULL]
+  "state_change" BOOLEAN
+  "state" SMALLINT
+  "is_hardstate" BOOLEAN
+  "current_check_attempt" SMALLINT
+  "max_check_attempts" SMALLINT
+  "last_state" SMALLINT
+  "last_hard_state" SMALLINT
+  "output" VARCHAR(1024) [default: NULL]
+  "long_output" VARCHAR(8192) [default: NULL]
+
+  Note: '''CakePHP table Object: Statusengine3Module.StatehistoryServices'''
+
+  Indexes {
+    (hostname, service_description, state_time) [name: "host_servicename_time"]
+    (service_description, state_time) [name: "servicename_time"]
+  }
+}
+
+Table "statusengine_service_acknowledgements" {
+  "service_description" VARCHAR(255) [pk, not null, default: NULL]
+  "entry_time" BIGINT [pk, not null, default: NULL]
+  "entry_time_usec" INTEGER [pk, not null]
+  "hostname" VARCHAR(255) [default: NULL]
+  "state" SMALLINT
+  "author_name" VARCHAR(255) [default: NULL]
+  "comment_data" VARCHAR(1024) [default: NULL]
+  "acknowledgement_type" SMALLINT
+  "is_sticky" BOOLEAN
+  "persistent_comment" BOOLEAN
+  "notify_contacts" BOOLEAN
+
+  Note: '''CakePHP table Object: Statusengine3Module.AcknowledgementServices'''
+
+  Indexes {
+    (hostname, service_description) [name: "servicename"]
+    entry_time [name: "entry_time"]
+    (service_description, entry_time) [name: "servicedesc_time"]
+  }
+}
+
+Table "statusengine_host_acknowledgements" {
+  "hostname" VARCHAR(255) [pk, not null, default: NULL]
+  "entry_time" BIGINT [pk, not null, default: NULL]
+  "entry_time_usec" INTEGER [pk, not null]
+  "state" SMALLINT
+  "author_name" VARCHAR(255) [default: NULL]
+  "comment_data" VARCHAR(1024) [default: NULL]
+  "acknowledgement_type" SMALLINT
+  "is_sticky" BOOLEAN
+  "persistent_comment" BOOLEAN
+  "notify_contacts" BOOLEAN
+
+  Note: '''CakePHP table Object: Statusengine3Module.AcknowledgementHosts'''
+
+  Indexes {
+    hostname [name: "hostname"]
+    entry_time [name: "entry_time"]
+  }
+}
+
+
+Ref: services.uuid < statusengine_perfdata.service_description
+Ref: services.uuid - statusengine_servicestatus.service_description
+Ref: services.uuid < statusengine_servicechecks.service_description
+Ref: hosts.uuid - statusengine_hoststatus.hostname
+Ref: hosts.uuid < statusengine_host_statehistory.hostname
+Ref: services.uuid < statusengine_service_scheduleddowntimes.service_description
+Ref: hosts.uuid < statusengine_hostchecks.hostname
+Ref: hosts.uuid < statusengine_host_notifications.hostname
+Ref: services.uuid < statusengine_service_notifications.service_description
+Ref: hosts.uuid < statusengine_host_downtimehistory.hostname
+Ref: statusengine_host_downtimehistory.internal_downtime_id - statusengine_host_scheduleddowntimes.internal_downtime_id
+Ref: hosts.uuid < statusengine_host_scheduleddowntimes.hostname
+Ref: services.uuid < statusengine_service_downtimehistory.service_description
+Ref: statusengine_service_downtimehistory.internal_downtime_id - statusengine_service_scheduleddowntimes.internal_downtime_id
+Ref: services.uuid < statusengine_service_statehistory.service_description
+Ref: services.uuid < statusengine_service_acknowledgements.service_description
+Ref: hosts.uuid < statusengine_host_acknowledgements.hostname
