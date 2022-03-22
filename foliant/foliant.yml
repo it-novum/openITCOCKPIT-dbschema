@@ -5,5 +5,5 @@ chapters:
 
 preprocessors:
   - dbmldoc:
-    spec_path: !path schema.dbml
+      spec_path: !path schema.dbml
   - plantuml

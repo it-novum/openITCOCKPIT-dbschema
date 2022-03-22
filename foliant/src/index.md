@@ -1,3 +1,3 @@
-# Welcome to openITCOCKPIT database documentation
+# openITCOCKPIT database documentation
 
 <dbmldoc></dbmldoc>
