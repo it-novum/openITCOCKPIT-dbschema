@@ -1,0 +1,9 @@
+title: openITCOCKPIT database documentation
+
+chapters:
+  - index.md
+
+preprocessors:
+  - dbmldoc:
+    spec_path: !path schema.dbml
+  - plantuml
